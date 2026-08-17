@@ -9,7 +9,6 @@ require 'fileutils'
 
 VERSION = "1.0.0"
 HOME = Pathname.new(Dir.home)
-# 修复：使用 join 方法正确拼接路径
 CONFIG_DIR = HOME.join('.local', 'waveproxy')
 
 # ==================== 数据结构定义 开始 ====================
@@ -347,7 +346,7 @@ def print_help
   puts "  \033[32m-s, --silent\033[0m        Suppress all non-output messages (for scripting)"
   puts "  \033[32m-v, --verbose\033[0m       Enable detailed debug output (stderr)"
   puts
-  puts "For more details, visit: https://waveproxy.org"
+  puts "For more details, visit: https://proxy.macwave.org"
 end
 
 
