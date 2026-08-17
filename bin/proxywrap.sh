@@ -3,6 +3,27 @@
 # 支持: curl, wget, git, wave, npm, yarn, pnpm, pip, pip3, poetry, 
 #       docker, podman, apt, apt-get, yum, dnf, pacman, zypper, brew, port
 
+# 显示帮助
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    echo -e "\033[35musage: \033[38;5;197mproxywrap <command> [args...]\033[0m"
+    echo
+    echo "proxywrap 1.0.0 🌊"
+    echo "Auto-inject proxy into any command."
+    echo
+    echo -e "\033[35mSupported commands:\033[0m"
+    echo "  \033[32mcurl\033[0m    -> -x \"\$PROXY\""
+    echo "  \033[32mwget\033[0m    -> -e use_proxy=yes -e http_proxy=\"\$PROXY\""
+    echo "  \033[32mgit\033[0m     -> -c http.proxy=\"\$PROXY\""
+    echo "  \033[32mwave\033[0m    -> --proxy \"\$PROXY\""
+    echo "  \033[32mbrew\033[0m, \033[32mport\033[0m, \033[32mnpm\033[0m, \033[32mpip\033[0m, \033[32mdocker\033[0m, ... -> http_proxy env"
+    echo
+    echo -e "\033[35mFlags:\033[0m"
+    echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
+    echo
+    echo "For more details, visit: https://waveproxy.org"
+    exit 0
+fi
+
 # 从参数里找 URL
 URL=""
 for arg in "$@"; do
