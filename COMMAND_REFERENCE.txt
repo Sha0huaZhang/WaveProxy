@@ -1,1 +1,180 @@
-1
+WaveProxy Command Reference (v1.0)
+==================================
+
+1. Core Commands
+----------------
+
+waveproxy query <url>
+    Query the proxy for a given URL.
+    
+    Output:
+      Proxy address (with quotes)  -> "socks5://127.0.0.1:1080"
+      Direct connection            -> None
+    
+    Example:
+      waveproxy query github.com
+      > "socks5://127.0.0.1:1080"
+
+
+proxywrap <command> [args...]
+    Wrap any command with automatic proxy injection.
+    
+    How it works:
+      1. Extracts the URL from the command arguments
+      2. Calls waveproxy query to get the proxy
+      3. Injects proxy automatically based on command type
+    
+    Supported commands:
+      curl   -> -x "$PROXY"
+      git    -> -c http.proxy="$PROXY"
+      wave   -> --proxy "$PROXY"
+      others -> http_proxy environment variable
+    
+    Examples:
+      proxywrap curl -LO https://example.com/file.zip
+      proxywrap git clone https://github.com/xxx/yyy.git
+      proxywrap brew install node
+      proxywrap wave install some-package --ver 1.0
+
+
+2. Configuration Management (proxydeploy)
+-----------------------------------------
+
+proxydeploy
+    Show the current default config name.
+    
+    Example:
+      proxydeploy
+      > main
+
+
+proxydeploy list [@name]
+    View the content of a config file.
+    
+    Without @name : Show the default config (main)
+    With @name    : Show the specified config
+    
+    Examples:
+      proxydeploy list
+      proxydeploy list @work
+      proxydeploy list @nonexistent  -> None
+
+
+proxydeploy edit [@name]
+    Edit a config file using nano.
+    
+    Without @name : Edit the default config
+    With @name    : Edit the specified config
+    If file doesn't exist, it will be created automatically.
+    
+    Examples:
+      proxydeploy edit
+      proxydeploy edit @work
+
+
+proxydeploy run --change-to-default @new @old
+    Switch the default config to another one.
+    
+    Parameters:
+      @new  : The config name to set as default (must exist)
+      @old  : The current default config name (for confirmation)
+    
+    What it does:
+      1. Copies proxydeploy@new.txt to proxydeploy@main.txt
+      2. Updates WAVEPROXY_CONFIG environment variable to @new
+    
+    Example:
+      proxydeploy run --change-to-default @work @main
+
+
+3. Environment Variable
+-----------------------
+
+WAVEPROXY_CONFIG
+    Temporarily or permanently switch the active config.
+    
+    Temporary (single command):
+      WAVEPROXY_CONFIG=work waveproxy query github.com
+    
+    Permanent (current session):
+      export WAVEPROXY_CONFIG=work
+      waveproxy query github.com
+    
+    Switch back to default:
+      export WAVEPROXY_CONFIG=main
+
+
+4. Installation & Uninstallation
+--------------------------------
+
+Install:
+    curl -fsSL https://waveproxy.org/install.sh | bash
+
+Uninstall:
+    rm -rf ~/.local/waveproxy
+
+
+5. File Structure
+-----------------
+
+~/.local/waveproxy/
+├── bin/
+│   ├── waveproxy.py
+│   ├── proxywrap.sh
+│   └── proxydeploy
+├── proxydeploy@main.txt      # Default config
+├── proxydeploy@work.txt      # Work config
+├── proxydeploy@home.txt      # Home config
+└── README.md
+
+
+6. Quick Summary Table
+----------------------
+
+Command                                    Description
+------------------------------------------ -----------------------------------------
+waveproxy query <url>                      Query proxy for a URL
+proxywrap <command>                        Auto-inject proxy into any command
+proxydeploy                                Show current default config name
+proxydeploy list                           View default config content
+proxydeploy list @name                     View specified config content
+proxydeploy edit                           Edit default config
+proxydeploy edit @name                     Edit specified config
+proxydeploy run --change-to-default @n @o  Switch default config
+export WAVEPROXY_CONFIG=name               Switch to specified config
+
+
+7. Default Configuration Example
+--------------------------------
+
+Below is the complete default configuration file that comes with WaveProxy.
+You can use it as a template to create your own rules.
+
+<!--
+    WaveProxy default configuration file
+    Location: ~/.local/waveproxy/proxydeploy@main.txt
+    Edit with: proxydeploy edit
+-->
+
+def proxy:
+    <!-- Define your proxy variables here -->
+    let "home" = "socks5://127.0.0.1:1080"
+    let "work" = "http://proxy.company.com:8080"
+
+[proxy_rule:
+    <!-- Rules using the "home" proxy -->
+    "home":
+        "github.com/**"
+        "raw.githubusercontent.com/**"
+        "api.github.com/**"
+        ! "**.github.com/**" unless "https://github.com/**" "raw.githubusercontent.com/**" "api.github.com/**"
+        ! "gitlab.internal.company.com"
+        ! "mirrors.company.com"
+        ! "**.local/**"
+
+    <!-- Rules using the "work" proxy -->
+    "work":
+        "internal.company.com" direct
+        ? "home"
+        default: "home"
+]
