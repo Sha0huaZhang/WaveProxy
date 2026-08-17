@@ -12,7 +12,8 @@ NC='\033[0m'
 
 echo "🌊 Installing WaveProxy v1.0..."
 
-# 1. 创建目录mkdir -p ~/.local/waveproxy/bin
+# 1. 创建目录（必须保留）
+mkdir -p ~/.local/waveproxy/bin
 
 # 2. 下载主程序
 echo "🌊 Downloading waveproxy.py..."
