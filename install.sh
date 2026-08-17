@@ -7,7 +7,7 @@ set -e
 # 颜色定义
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 echo "🌊 Installing WaveProxy v1.0..."
 
@@ -26,86 +26,15 @@ curl -L https://waveproxy.org/v1.0/proxywrap.sh -o ~/.local/waveproxy/bin/proxyw
 chmod +x ~/.local/waveproxy/bin/proxywrap.sh
 echo -e "${GREEN}🌊 proxywrap.sh downloaded successfully${NC}"
 
-# 4. 创建 proxydeploy 快捷脚本
-echo "🌊 Creating proxydeploy command..."
-cat > ~/.local/waveproxy/bin/proxydeploy << 'EOF'
-#!/bin/bash
-# proxydeploy - 配置管理工具
+# 4. 下载 proxydeploy.sh
+echo "🌊 Downloading proxydeploy.sh..."
+curl -L https://waveproxy.org/v1.0/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
+chmod +x ~/.local/waveproxy/bin/proxydeploy.sh
+echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 
-CONFIG_DIR="$HOME/.local/waveproxy"
-DEFAULT_NAME="main"
-
-CURRENT_NAME="${WAVEPROXY_CONFIG:-$DEFAULT_NAME}"
-
-CMD="${1:-status}"
-shift 2>/dev/null || true
-
-case "$CMD" in
-    status|"")
-        echo "$CURRENT_NAME"
-        ;;
-    
-    list)
-        TARGET="${1:-@$CURRENT_NAME}"
-        TARGET="${TARGET#@}"
-        CONFIG_FILE="$CONFIG_DIR/proxydeploy@${TARGET}.txt"
-        if [ -f "$CONFIG_FILE" ]; then
-            cat "$CONFIG_FILE"
-        else
-            echo "None"
-            exit 1
-        fi
-        ;;
-    
-    edit)
-        TARGET="${1:-@$CURRENT_NAME}"
-        TARGET="${TARGET#@}"
-        CONFIG_FILE="$CONFIG_DIR/proxydeploy@${TARGET}.txt"
-        if [ ! -f "$CONFIG_FILE" ]; then
-            echo "📄 Creating new config: proxydeploy@${TARGET}.txt"
-            touch "$CONFIG_FILE"
-        fi
-        nano "$CONFIG_FILE"
-        ;;
-    
-    run)
-        if [ "$1" = "--change-to-default" ]; then
-            NEW_NAME="${2#@}"
-            OLD_NAME="${3#@}"
-            
-            NEW_FILE="$CONFIG_DIR/proxydeploy@${NEW_NAME}.txt"
-            if [ ! -f "$NEW_FILE" ]; then
-                echo "Error: Config not found: proxydeploy@${NEW_NAME}.txt"
-                exit 1
-            fi
-            
-            OLD_FILE="$CONFIG_DIR/proxydeploy@${OLD_NAME}.txt"
-            if [ ! -f "$OLD_FILE" ]; then
-                echo "Warning: Old config not found: proxydeploy@${OLD_NAME}.txt"
-            fi
-            
-            echo "Switching default config from $OLD_NAME to $NEW_NAME"
-            cp "$NEW_FILE" "$CONFIG_DIR/proxydeploy@main.txt"
-            
-            echo "export WAVEPROXY_CONFIG=$NEW_NAME" > "$CONFIG_DIR/.default_config"
-            
-            echo "🌊 Default config updated to: $NEW_NAME"
-            echo "WaveProxy will use $NEW_NAME on next query."
-        else
-            echo "Usage: proxydeploy run --change-to-default @new @old"
-            exit 1
-        fi
-        ;;
-    
-    *)
-        echo "Unknown command: $CMD"
-        echo "Available commands: status, list, edit, run"
-        exit 1
-        ;;
-esac
-EOF
-chmod +x ~/.local/waveproxy/bin/proxydeploy
-echo -e "${GREEN}🌊 proxydeploy command created successfully${NC}"
+# 创建不带 .sh 的软链接，方便用户调用
+ln -sf ~/.local/waveproxy/bin/proxydeploy.sh ~/.local/waveproxy/bin/proxydeploy
+echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 
 # 5. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@main.txt ]; then
