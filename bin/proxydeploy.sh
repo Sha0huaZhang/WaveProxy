@@ -118,15 +118,15 @@ case "$CMD" in
             # 从当前配置中读取第一个 let 变量名
             CONFIG_FILE="$CONFIG_DIR/proxydeploy@${CURRENT_NAME}.txt"
             if [ ! -f "$CONFIG_FILE" ]; then
-                echo "None"
+                echo "🌊 None"
                 exit 1
             fi
             # 提取第一个 let "name" = "url" 中的 name
             WORKING_PROXY=$(grep -m 1 '^[[:space:]]*let "' "$CONFIG_FILE" | sed -n 's/.*let "\([^"]*\)".*/\1/p')
             if [ -z "$WORKING_PROXY" ]; then
-                echo "None"
+                echo "🌊 None"
             else
-                echo "$WORKING_PROXY"
+                echo "🌊 $WORKING_PROXY"
             fi
             exit 0
         fi
@@ -135,15 +135,15 @@ case "$CMD" in
             # 从默认配置中读取第一个 let 变量名
             DEFAULT_CONFIG="$CONFIG_DIR/proxydeploy@default.txt"
             if [ ! -f "$DEFAULT_CONFIG" ]; then
-                echo "None"
+                echo "🌊 None"
                 exit 1
             fi
             # 提取第一个 let "name" = "url" 中的 name
             DEFAULT_PROXY=$(grep -m 1 '^[[:space:]]*let "' "$DEFAULT_CONFIG" | sed -n 's/.*let "\([^"]*\)".*/\1/p')
             if [ -z "$DEFAULT_PROXY" ]; then
-                echo "None"
+                echo "🌊 None"
             else
-                echo "$DEFAULT_PROXY"
+                echo "🌊 $DEFAULT_PROXY"
             fi
             exit 0
         fi
