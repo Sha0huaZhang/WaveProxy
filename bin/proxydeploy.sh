@@ -11,8 +11,8 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo
     echo -e "\033[35mSubcommands:\033[0m"
     echo "  \033[32mproxydeploy\033[0m               Show current default config name"
-    echo "  \033[32mlist\033[0m [@name]             View config content (default: main)"
-    echo "  \033[32medit\033[0m [@name]             Edit config with nano (default: main)"
+    echo "  \033[32mlist\033[0m [@name]             View config content (default: default)"
+    echo "  \033[32medit\033[0m [@name]             Edit config with nano (default: default)"
     echo "  \033[32mrun --change-to-default @new @old\033[0m  Switch default config"
     echo
     echo -e "\033[35mFlags:\033[0m"
@@ -35,14 +35,15 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo "  \033[32mproxydeploy edit @work\033[0m"
     echo ""
     echo "  # Switch default config to 'work'"
-    echo "  \033[32mproxydeploy run --change-to-default @work @main\033[0m"
+    echo "  \033[32mproxydeploy run --change-to-default @work @default\033[0m"
     echo ""
     echo "For more details, visit: https://waveproxy.org"
     exit 0
 fi
 
 CONFIG_DIR="$HOME/.local/waveproxy"
-DEFAULT_NAME="main"
+# 默认配置名改为 default
+DEFAULT_NAME="default"
 
 # 获取当前默认配置名（从环境变量或默认）
 CURRENT_NAME="${WAVEPROXY_CONFIG:-$DEFAULT_NAME}"
@@ -96,7 +97,7 @@ case "$CMD" in
             fi
             
             echo "Switching default config from $OLD_NAME to $NEW_NAME"
-            cp "$NEW_FILE" "$CONFIG_DIR/proxydeploy@main.txt"
+            cp "$NEW_FILE" "$CONFIG_DIR/proxydeploy@default.txt"
             
             echo "export WAVEPROXY_CONFIG=$NEW_NAME" > "$CONFIG_DIR/.default_config"
             
