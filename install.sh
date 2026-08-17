@@ -32,11 +32,11 @@ curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxyd
 chmod +x ~/.local/waveproxy/bin/proxydeploy.sh
 echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 
-# 创建不带 .sh 的软链接，方便用户调用
+# 创建不带 .sh 的软链接
 ln -sf ~/.local/waveproxy/bin/proxydeploy.sh ~/.local/waveproxy/bin/proxydeploy
 echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 
-# === 新增：为 waveproxy.py 创建软链接 ===
+# 为 waveproxy.py 创建软链接
 ln -sf ~/.local/waveproxy/bin/waveproxy.py ~/.local/waveproxy/bin/waveproxy
 echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.py${NC}"
 
@@ -70,4 +70,4 @@ echo "  proxydeploy edit                    # Edit default config"
 echo "  proxydeploy list @work              # View work config"
 echo ""
 echo -e "${GREEN}🌊 Config file: ~/.local/waveproxy/proxydeploy@main.txt${NC}"
-echo -e "${GREEN}🌊 Uninstall: rm -rf ~/.local/waveproxy${NC}"
+echo -e "${RED}🌊 Uninstall: rm -rf ~/.local/waveproxy${NC}"
