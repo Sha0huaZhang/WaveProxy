@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 
+# ==================== proxydeploy 数据结构定义 开始 ====================
+
 class ExcludeRule:
     """排除项规则（含白名单例外）"""
     def __init__(self, pattern: str, unless_list: List[str] = None):
@@ -30,6 +32,8 @@ class ProxyRuleBlock:
         self.alt_fallback: Optional[str] = None
         self.fallback: Optional[str] = None
 
+# ==================== proxydeploy 数据结构定义 结束 ====================
+
 
 class ProxyParser:
     """配置文件解析器"""
@@ -39,7 +43,9 @@ class ProxyParser:
         self.errors: List[str] = []
         self.line_num = 0
 
+    # ==================== 解析 proxydeploy@*.txt 开始 ====================
     def parse(self, content: str) -> bool:
+        """解析配置文件内容，返回是否解析成功"""
         lines = content.split('\n')
         i = 0
         in_def_proxy = False
@@ -54,6 +60,7 @@ class ProxyParser:
                 i += 1
                 continue
             
+            # 跳过注释（<!-- ... -->）
             if stripped.startswith('<!--'):
                 if '-->' in stripped:
                     i += 1
@@ -63,11 +70,13 @@ class ProxyParser:
                 i += 1
                 continue
             
+            # 解析 def proxy: 块
             if stripped == 'def proxy:':
                 in_def_proxy = True
                 i += 1
                 continue
             
+            # 解析 let "name" = "url"
             if in_def_proxy and stripped.startswith('let '):
                 match = re.match(r'let\s+"([^"]+)"\s*=\s*"([^"]+)"', stripped)
                 if match:
@@ -81,32 +90,39 @@ class ProxyParser:
                 i += 1
                 continue
             
+            # 解析 [proxy_rule: 开始
             if stripped == '[proxy_rule:':
                 in_def_proxy = False
                 i += 1
                 continue
             
+            # 解析 ] 结束块
             if stripped == ']' and current_block:
                 self.blocks.append(current_block)
                 current_block = None
                 i += 1
                 continue
             
+            # 解析规则块内的内容
             if current_block:
+                # 检查缩进（必须是 4 的倍数）
                 indent = len(line) - len(line.lstrip())
                 if indent % 4 != 0:
                     self.errors.append(f"Line {self.line_num}: indentation must be multiple of 4, got {indent}")
                 
+                # 解析匹配模式 "pattern"
                 if stripped.startswith('"') and not stripped.endswith(' direct'):
                     pattern = stripped.strip('"')
                     if '*' in pattern and '**' in pattern:
                         self.errors.append(f"Line {self.line_num}: cannot use both * and ** in same proxy block")
                     current_block.patterns.append(pattern)
                 
+                # 解析排除项 ! "pattern"
                 elif stripped.startswith('! "') and ' unless ' not in stripped:
                     pattern = stripped.replace('! "', '').rstrip('"')
                     current_block.excludes.append(ExcludeRule(pattern))
                 
+                # 解析排除项带白名单 ! "pattern" unless "a" "b"
                 elif stripped.startswith('! "') and ' unless ' in stripped:
                     parts = stripped.split(' unless ')
                     pattern = parts[0].replace('! "', '').rstrip('"')
@@ -116,10 +132,12 @@ class ProxyParser:
                         self.errors.append(f"Line {self.line_num}: 'unless' must be followed by at least one whitelist pattern")
                     current_block.excludes.append(ExcludeRule(pattern, unless_list))
                 
+                # 解析直连 "pattern" direct
                 elif stripped.endswith(' direct'):
                     pattern = stripped.replace(' direct', '').strip('"')
                     current_block.direct_rules.append(pattern)
                 
+                # 解析备选 ? "name"
                 elif stripped.startswith('? "'):
                     name = stripped.split('"')[1]
                     if current_block.alt_fallback:
@@ -128,6 +146,7 @@ class ProxyParser:
                         self.errors.append(f"Line {self.line_num}: '?' references undefined variable '{name}'")
                     current_block.alt_fallback = name
                 
+                # 解析兜底 default: "name"
                 elif stripped.startswith('default: "'):
                     name = stripped.split('"')[1]
                     if current_block.fallback:
@@ -136,9 +155,11 @@ class ProxyParser:
                         self.errors.append(f"Line {self.line_num}: 'default' references undefined variable '{name}'")
                     current_block.fallback = name
                 
+                # 未知关键字
                 else:
                     self.errors.append(f"Line {self.line_num}: unknown keyword '{stripped}'")
             
+            # 检测代理变量名（规则块开始前的行）
             elif not in_def_proxy and stripped.endswith(':'):
                 var_name = stripped.rstrip(':')
                 if var_name in self.variables:
@@ -148,10 +169,12 @@ class ProxyParser:
             
             i += 1
         
+        # 检查是否有未闭合的块
         if current_block:
             self.errors.append(f"Line {self.line_num}: unclosed proxy rule block")
         
         return len(self.errors) == 0
+    # ==================== 解析 proxydeploy@*.txt 结束 ====================
 
 
 class Matcher:
@@ -171,12 +194,22 @@ class Matcher:
         
         return url == pattern
     
-    def resolve(self, url: str, variables: Dict[str, str], blocks: List[ProxyRuleBlock]) -> Optional[str]:
-        for block in blocks:
+    def resolve(self, url: str, variables: Dict[str, str], blocks: List[ProxyRuleBlock], verbose=False) -> Optional[str]:
+        if verbose:
+            print(f"🌊 [verbose] Resolving URL: {url}", file=sys.stderr)
+        
+        for i, block in enumerate(blocks):
+            if verbose:
+                print(f"🌊 [verbose] Checking block #{i+1}: {block.proxy_var}", file=sys.stderr)
+            
+            # 1. 检查直连
             for direct_pattern in block.direct_rules:
                 if self.match_pattern(url, direct_pattern):
+                    if verbose:
+                        print(f"🌊 [verbose] → Direct match: {direct_pattern}", file=sys.stderr)
                     return None
             
+            # 2. 检查排除项
             excluded = False
             for exclude in block.excludes:
                 if self.match_pattern(url, exclude.pattern):
@@ -186,30 +219,53 @@ class Matcher:
                             unless_matched = True
                             break
                     if not unless_matched:
+                        if verbose:
+                            print(f"🌊 [verbose] → Excluded by: {exclude.pattern}", file=sys.stderr)
                         excluded = True
                         break
+                    else:
+                        if verbose:
+                            print(f"🌊 [verbose] → Excluded but whitelisted by: {exclude.unless_list}", file=sys.stderr)
             
             if excluded:
                 continue
             
+            # 3. 检查匹配模式
             for pattern in block.patterns:
                 if self.match_pattern(url, pattern):
+                    if verbose:
+                        print(f"🌊 [verbose] → Matched: {pattern} -> {block.proxy_var}", file=sys.stderr)
                     return variables.get(block.proxy_var)
             
+            # 4. 检查备选
             if block.alt_fallback:
+                if verbose:
+                    print(f"🌊 [verbose] → Using fallback: {block.alt_fallback}", file=sys.stderr)
                 return variables.get(block.alt_fallback)
             
+            # 5. 检查兜底
             if block.fallback:
+                if verbose:
+                    print(f"🌊 [verbose] → Using default: {block.fallback}", file=sys.stderr)
                 return variables.get(block.fallback)
         
+        if verbose:
+            print(f"🌊 [verbose] → No match, returning None", file=sys.stderr)
         return None
 
 
-def load_config() -> Tuple[Dict[str, str], List[ProxyRuleBlock], List[str]]:
+# ==================== 加载 proxydeploy@*.txt 开始 ====================
+
+def load_config(verbose=False) -> Tuple[Dict[str, str], List[ProxyRuleBlock], List[str]]:
     config_name = os.environ.get('WAVEPROXY_CONFIG', 'main')
     config_path = Path.home() / '.local' / 'waveproxy' / f'proxydeploy@{config_name}.txt'
     
+    if verbose:
+        print(f"🌊 [verbose] Using config: {config_path}", file=sys.stderr)
+    
     if not config_path.exists():
+        if verbose:
+            print(f"🌊 [verbose] Config file not found, using no rules", file=sys.stderr)
         return {}, [], []
     
     try:
@@ -223,37 +279,88 @@ def load_config() -> Tuple[Dict[str, str], List[ProxyRuleBlock], List[str]]:
     if not success:
         return {}, [], parser.errors
     
+    if verbose:
+        print(f"🌊 [verbose] Loaded {len(parser.variables)} variables, {len(parser.blocks)} rule blocks", file=sys.stderr)
+    
     return parser.variables, parser.blocks, []
+
+# ==================== 加载 proxydeploy@*.txt 结束 ====================
+
+
+def print_waveproxy_help():
+    print("\033[35musage: \033[38;5;197mwaveproxy <command> [url] [flags]\033[0m")
+    print()
+    print("WaveProxy 1.0.0 🌊")
+    print("A lightweight, script-friendly command-line proxy decision tool.")
+    print()
+    print("\033[35mCommands:\033[0m")
+    print("  \033[32mquery <url>\033[0m          Query the proxy for a given URL")
+    print("                          Output: \"proxy\" or None")
+    print()
+    print("\033[35mFlags:\033[0m")
+    print("  \033[32m-h, --help\033[0m          Show this help message and exit")
+    print("  \033[32m-V, --version\033[0m       Show program's version number and exit")
+    print("  \033[32m-s, --silent\033[0m        Suppress all non-output messages (for scripting)")
+    print("  \033[32m-v, --verbose\033[0m       Enable detailed debug output (stderr)")
+    print()
+    print("For more details, visit: https://waveproxy.org")
 
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: waveproxy query <url>")
         sys.exit(1)
-    
+
+    # 检查 -V / --version
+    if '-V' in sys.argv or '--version' in sys.argv:
+        print("WaveProxy 1.0.0 🌊")
+        sys.exit(0)
+
+    # 检查 -h / --help
+    if '-h' in sys.argv or '--help' in sys.argv:
+        print_waveproxy_help()
+        sys.exit(0)
+
+    # 检查 -v / --verbose
+    verbose = False
+    if '-v' in sys.argv or '--verbose' in sys.argv:
+        verbose = True
+        sys.argv = [arg for arg in sys.argv if arg not in ('-v', '--verbose')]
+
+    # 检查 -s / --silent
+    silent = False
+    if '-s' in sys.argv or '--silent' in sys.argv:
+        silent = True
+        sys.argv = [arg for arg in sys.argv if arg not in ('-s', '--silent')]
+
     if sys.argv[1] != 'query':
         print("Usage: waveproxy query <url>")
         sys.exit(1)
-    
+
     url = sys.argv[2] if len(sys.argv) > 2 else None
     if not url:
         print("Usage: waveproxy query <url>")
         sys.exit(1)
-    
-    variables, blocks, errors = load_config()
-    
+
+    if verbose:
+        print(f"🌊 [verbose] Querying URL: {url}", file=sys.stderr)
+
+    variables, blocks, errors = load_config(verbose=verbose)
+
     if errors:
         for err in errors:
             print(err, file=sys.stderr)
         sys.exit(1)
-    
+
     if not blocks:
+        if verbose:
+            print(f"🌊 [verbose] No rules found, returning None", file=sys.stderr)
         print("None")
         sys.exit(0)
-    
+
     matcher = Matcher()
-    result = matcher.resolve(url, variables, blocks)
-    
+    result = matcher.resolve(url, variables, blocks, verbose=verbose)
+
     if result is None:
         print("None")
     else:
