@@ -45,7 +45,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo "  # Print default proxy from config"
     echo "  \033[32mproxydeploy run --print-default-proxy\033[0m"
     echo ""
-    echo "For more details, visit: https://waveproxy.org"
+    echo "For more details, visit: https://proxy.macwave.org"
     exit 0
 fi
 
@@ -114,13 +114,11 @@ case "$CMD" in
         fi
 
         if [ "$1" = "--print-working-proxy" ]; then
-            # 从当前配置中读取第一个 let 变量名
             CONFIG_FILE="$CONFIG_DIR/proxydeploy@${CURRENT_NAME}.txt"
             if [ ! -f "$CONFIG_FILE" ]; then
                 echo "🌊 None"
                 exit 1
             fi
-            # 修复：忽略注释行，只找真正的 let 定义
             WORKING_PROXY=$(grep -v '^[[:space:]]*<!--' "$CONFIG_FILE" | grep -m 1 '^[[:space:]]*let "' | sed -n 's/.*let "\([^"]*\)".*/\1/p')
             if [ -z "$WORKING_PROXY" ]; then
                 echo "🌊 None"
@@ -131,13 +129,11 @@ case "$CMD" in
         fi
 
         if [ "$1" = "--print-default-proxy" ]; then
-            # 从默认配置中读取第一个 let 变量名
             DEFAULT_CONFIG="$CONFIG_DIR/proxydeploy@default.txt"
             if [ ! -f "$DEFAULT_CONFIG" ]; then
                 echo "🌊 None"
                 exit 1
             fi
-            # 修复：忽略注释行，只找真正的 let 定义
             DEFAULT_PROXY=$(grep -v '^[[:space:]]*<!--' "$DEFAULT_CONFIG" | grep -m 1 '^[[:space:]]*let "' | sed -n 's/.*let "\([^"]*\)".*/\1/p')
             if [ -z "$DEFAULT_PROXY" ]; then
                 echo "🌊 None"
