@@ -1,21 +1,33 @@
-# WaveProxy
-🌊Install WaveProxy
-
-curl -fsSL https://proxy.macwave.org/install.sh | bash
+# 🌊Install WaveProxy
+In the terminal, run the following command:
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/install.sh)"
+```
 
 After installation, run one of the following commands to apply PATH changes:
-  source ~/.zshrc          (if you use zsh)
-  source ~/.bashrc         (if you use bash)
-  Or simply close and reopen your terminal.
+ ```
+ source ~/.zshrc
+```  
+  
+⚠️Important: if you use bash, run `source ~/.bashrc`    
 
-Installation directory: ~/.local/waveproxy/
+Or simply close and reopen your terminal.
+
+Installation directory: `~/.local/waveproxy/`
+
+# 🌊 Uninstall WaveProxy    
+
+In the terminal, run the following command:
+```
+/bin/bash -c "INSTALL_DIR=\"\$HOME/.local/waveproxy\"; echo -e \"\033[31mYou are deleting WaveProxy, are you sure? [Y/n]\033[0m\"; read -n 1 -r; echo; if [[ ! \$REPLY =~ ^[Yy]\$ ]]; then echo \"🌊 Uninstall cancelled.\"; exit 0; fi; if [ -d \"\$INSTALL_DIR\" ]; then echo \"🌊 Removing \$INSTALL_DIR...\"; rm -rf \"\$INSTALL_DIR\"; else echo \"🌊 WaveProxy installation directory not found. Skipping.\"; fi; for RC_FILE in \"\$HOME/.zshrc\" \"\$HOME/.bashrc\"; do if [ -f \"\$RC_FILE\" ]; then sed -i '' '/# WaveProxy/d' \"\$RC_FILE\" 2>/dev/null || true; sed -i '' '/export PATH=\".*waveproxy\/bin/d' \"\$RC_FILE\" 2>/dev/null || true; echo \"🌊 Removed WaveProxy PATH entries from \$RC_FILE\"; fi; done; echo \"\"; echo \"🌊 WaveProxy has been uninstalled.\"; echo \"🌊 Please restart your terminal to apply changes.\""   
+```
+
+# 🌊 Commands for WaveProxy
 
 
-🌊 Commands for WaveProxy
-
-
-Main Program
+** Main Program 
 ---------------
+```
 waveproxy query <url>                      # Query proxy for a URL
 waveproxy commandreference                 # Print the complete command reference
 waveproxy -h / --help                      # Show help information
@@ -23,7 +35,7 @@ waveproxy -V / --version                   # Show version number
 waveproxy -s / --silent                    # Silent mode (output result only)
 waveproxy -v / --verbose                   # Verbose mode (output debug info)
 waveproxy -f / --fail                      # Exit with non-zero code on error
-
+```
 
 Wrapper
 ----------
@@ -32,6 +44,7 @@ proxywrap <any command>                    # Auto-inject proxy into any command
 
 Configuration Management
 ---------------------------
+```
 proxydeploy                                # Show current default config name
 proxydeploy list                           # View default config content
 proxydeploy list @name                     # View specified config content
@@ -41,21 +54,17 @@ proxydeploy run --change-to-default @new @old  # Switch default config
 proxydeploy run --print-working-proxy       # Print current working proxy
 proxydeploy run --print-default-proxy       # Print default proxy
 proxydeploy -h / --help                    # Show help information
+```
 
 
 Environment Variable
 -----------------------
+```
 export WAVEPROXY_CONFIG=name                # Switch to specified config
 WAVEPROXY_CONFIG=name waveproxy query <url> # Temporarily switch config (single command)
+```
 
-
-🌊 Install WaveProxy
---------------------------------
-curl -fsSL https://proxy.macwave.org/install.sh | bash
-
-🌊 Uninstall WaveProxy
-------------------
-/bin/bash -c "INSTALL_DIR=\"\$HOME/.local/waveproxy\"; echo -e \"\033[31mYou are deleting WaveProxy, are you sure? [Y/n]\033[0m\"; read -n 1 -r; echo; if [[ ! \$REPLY =~ ^[Yy]\$ ]]; then echo \"🌊 Uninstall cancelled.\"; exit 0; fi; if [ -d \"\$INSTALL_DIR\" ]; then echo \"🌊 Removing \$INSTALL_DIR...\"; rm -rf \"\$INSTALL_DIR\"; else echo \"🌊 WaveProxy installation directory not found. Skipping.\"; fi; for RC_FILE in \"\$HOME/.zshrc\" \"\$HOME/.bashrc\"; do if [ -f \"\$RC_FILE\" ]; then sed -i '' '/# WaveProxy/d' \"\$RC_FILE\" 2>/dev/null || true; sed -i '' '/export PATH=\".*waveproxy\/bin/d' \"\$RC_FILE\" 2>/dev/null || true; echo \"🌊 Removed WaveProxy PATH entries from \$RC_FILE\"; fi; done; echo \"\"; echo \"🌊 WaveProxy has been uninstalled.\"; echo \"🌊 Please restart your terminal to apply changes.\""                               
+                            
 
 🌊 Config File Syntax
 ---------------------
