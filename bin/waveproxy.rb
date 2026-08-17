@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
-# WaveProxy - Ruby 版
-# 用法: waveproxy-rb query <url>
+# WaveProxy - 命令行代理决策工具
+# 用法: waveproxy query <url>
+# 兼容 Ruby 2.6+
 
 require 'pathname'
 require 'uri'
@@ -8,7 +9,8 @@ require 'fileutils'
 
 VERSION = "1.0.0"
 HOME = Pathname.new(Dir.home)
-CONFIG_DIR = HOME + '.local' / 'waveproxy'
+# 修复：使用 join 方法正确拼接路径
+CONFIG_DIR = HOME.join('.local', 'waveproxy')
 
 # ==================== 数据结构定义 开始 ====================
 
@@ -329,9 +331,9 @@ end
 
 
 def print_help
-  puts "\033[35musage: \033[38;5;197mwaveproxy-rb <command> [url] [flags]\033[0m"
+  puts "\033[35musage: \033[38;5;197mwaveproxy <command> [url] [flags]\033[0m"
   puts
-  puts "WaveProxy #{VERSION} 🌊 (Ruby)"
+  puts "WaveProxy #{VERSION} 🌊"
   puts "A lightweight, script-friendly command-line proxy decision tool."
   puts
   puts "\033[35mCommands:\033[0m"
@@ -351,13 +353,13 @@ end
 
 def main
   if ARGV.empty?
-    puts "Usage: waveproxy-rb query <url>"
+    puts "Usage: waveproxy query <url>"
     exit 1
   end
 
   # 检查 -V / --version
   if ARGV.include?('-V') || ARGV.include?('--version')
-    puts "WaveProxy #{VERSION} 🌊 (Ruby)"
+    puts "WaveProxy #{VERSION} 🌊"
     exit 0
   end
 
@@ -395,13 +397,13 @@ def main
   end
 
   if ARGV[0] != 'query'
-    puts "Usage: waveproxy-rb query <url>"
+    puts "Usage: waveproxy query <url>"
     exit 1
   end
 
   url = ARGV[1]
   if url.nil? || url.empty?
-    puts "Usage: waveproxy-rb query <url>"
+    puts "Usage: waveproxy query <url>"
     exit 1
   end
 
