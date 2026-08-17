@@ -94,6 +94,22 @@ proxydeploy run --change-to-default @new @old
       proxydeploy run --change-to-default @work @default
 
 
+proxydeploy run --print-working-proxy
+    Print the currently active proxy variable from the config.
+    
+    Example:
+      proxydeploy run --print-working-proxy
+      > home
+
+
+proxydeploy run --print-default-proxy
+    Print the default proxy variable from the config.
+    
+    Example:
+      proxydeploy run --print-default-proxy
+      > home
+
+
 3. Environment Variable
 -----------------------
 
@@ -115,7 +131,7 @@ WAVEPROXY_CONFIG
 --------------------------------
 
 Install:
-    curl -fsSL https://waveproxy.org/install.sh | bash
+    curl -fsSL https://proxy.macwave.org/install.sh | bash
 
 Uninstall:
     rm -rf ~/.local/waveproxy
@@ -126,13 +142,16 @@ Uninstall:
 
 ~/.local/waveproxy/
 ├── bin/
-│   ├── waveproxy.py
+│   ├── waveproxy.rb
+│   ├── waveproxy -> waveproxy.rb
 │   ├── proxywrap.sh
-│   └── proxydeploy
+│   ├── proxywrap -> proxywrap.sh
+│   ├── proxydeploy.sh
+│   └── proxydeploy -> proxydeploy.sh
 ├── proxydeploy@default.txt   # Default config
 ├── proxydeploy@work.txt      # Work config
 ├── proxydeploy@home.txt      # Home config
-└── README.md
+└── COMMAND_REFERENCE.txt
 
 
 6. Quick Summary Table
@@ -149,6 +168,8 @@ proxydeploy list @name                     View specified config content
 proxydeploy edit                           Edit default config
 proxydeploy edit @name                     Edit specified config
 proxydeploy run --change-to-default @n @o  Switch default config
+proxydeploy run --print-working-proxy      Print active proxy variable
+proxydeploy run --print-default-proxy      Print default proxy variable
 export WAVEPROXY_CONFIG=name               Switch to specified config
 
 
@@ -175,7 +196,7 @@ def proxy:
         "github.com/**"
         "raw.githubusercontent.com/**"
         "api.github.com/**"
-        ! "**github.com/**" unless "https://github.com/**" "raw.githubusercontent.com/**" "api.github.com/**"
+        ! "**.github.com/**" unless "https://github.com/**" "raw.githubusercontent.com/**" "api.github.com/**"
         ! "gitlab.internal.company.com"
         ! "mirrors.company.com"
         ! "**.local/**"
