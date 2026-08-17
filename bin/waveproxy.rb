@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # WaveProxy - 命令行代理决策工具
-# 用法: waveproxy query <url>
+# 版本: 1.0.0
+# 用法: waveproxy query <url> [flags]
 # 兼容 Ruby 2.6+
 
 require 'pathname'
@@ -8,11 +9,17 @@ require 'uri'
 require 'fileutils'
 
 VERSION = "1.0.0"
+# 用户主目录
 HOME = Pathname.new(Dir.home)
+# 配置文件存放目录
 CONFIG_DIR = HOME.join('.local', 'waveproxy')
 
-# ==================== 数据结构定义 开始 ====================
 
+# ============================================================================
+# 数据结构定义
+# ============================================================================
+
+# 排除项规则（含白名单例外）
 class ExcludeRule
   attr_reader :pattern, :unless_list
   def initialize(pattern, unless_list = [])
@@ -21,6 +28,7 @@ class ExcludeRule
   end
 end
 
+# 单个代理规则块
 class ProxyRuleBlock
   attr_accessor :proxy_var, :patterns, :excludes, :direct_rules, :alt_fallback, :fallback
   def initialize(proxy_var)
@@ -33,20 +41,23 @@ class ProxyRuleBlock
   end
 end
 
-# ==================== 数据结构定义 结束 ====================
 
+# ============================================================================
+# 配置文件解析器
+# ============================================================================
 
 class ProxyParser
   attr_reader :variables, :blocks, :errors
 
   def initialize
-    @variables = {}
-    @blocks = []
-    @errors = []
-    @line_num = 0
+    @variables = {}        # 存储 let "name" = "url" 定义的变量
+    @blocks = []           # 存储解析出的规则块
+    @errors = []           # 存储解析过程中的错误信息
+    @line_num = 0          # 当前行号（用于错误定位）
   end
 
-  # ==================== 解析 proxydeploy@*.txt 开始 ====================
+  # 解析 proxydeploy@*.txt 文件内容
+  # 返回 true 表示解析成功，false 表示有错误
   def parse(content)
     lines = content.each_line.map(&:chomp)
     i = 0
@@ -58,6 +69,7 @@ class ProxyParser
       line = lines[i]
       stripped = line.strip
 
+      # 跳过空行
       if stripped.empty?
         i += 1
         next
@@ -69,6 +81,7 @@ class ProxyParser
           i += 1
           next
         end
+        # 处理多行注释
         while i < lines.length && !lines[i].include?('-->')
           i += 1
         end
@@ -76,14 +89,14 @@ class ProxyParser
         next
       end
 
-      # 解析 def proxy: 块
+      # 解析 def proxy: 块开始
       if stripped == 'def proxy:'
         in_def_proxy = true
         i += 1
         next
       end
 
-      # 解析 let "name" = "url"
+      # 解析 let "name" = "url" 变量定义
       if in_def_proxy && stripped.start_with?('let ')
         match = stripped.match(/let\s+"([^"]+)"\s*=\s*"([^"]+)"/)
         if match
@@ -100,14 +113,14 @@ class ProxyParser
         next
       end
 
-      # 解析 [proxy_rule: 开始
+      # 解析 [proxy_rule: 块开始
       if stripped == '[proxy_rule:'
         in_def_proxy = false
         i += 1
         next
       end
 
-      # 解析 ] 结束块
+      # 解析 ] 块结束
       if stripped == ']' && current_block
         @blocks << current_block
         current_block = nil
@@ -126,7 +139,7 @@ class ProxyParser
         # 解析匹配模式 "pattern"
         if stripped.start_with?('"') && !stripped.end_with?(' direct')
           pattern = stripped.tr('"', '')
-          # 修复：正确判断 * 和 ** 冲突
+          # 检查 * 和 ** 冲突
           if pattern.include?('**')
             remaining_stars = pattern.gsub('**', '').count('*')
             if remaining_stars > 0
@@ -200,7 +213,7 @@ class ProxyParser
           @errors << "Line #{@line_num}: unknown keyword '#{stripped}'"
         end
 
-      # 解析规则块标签
+      # 解析规则块标签（如 "home":）
       elsif !in_def_proxy && stripped.end_with?(':')
         label = stripped.rstrip(':').tr('"', '')
         current_block = ProxyRuleBlock.new(label)
@@ -209,15 +222,20 @@ class ProxyParser
       i += 1
     end
 
+    # 检查是否有未闭合的块
     @errors << "Line #{@line_num}: unclosed proxy rule block" if current_block
 
     @errors.empty?
   end
-  # ==================== 解析 proxydeploy@*.txt 结束 ====================
 end
 
 
+# ============================================================================
+# URL 匹配引擎
+# ============================================================================
+
 class Matcher
+  # 判断 URL 是否匹配模式（支持 * 和 **）
   def match_pattern(url, pattern)
     if pattern.include?('**')
       regex = Regexp.new('^' + Regexp.escape(pattern).gsub('\\*\\*', '.*') + '$')
@@ -232,6 +250,7 @@ class Matcher
     url == pattern
   end
 
+  # 按优先级解析 URL，返回代理地址或 nil
   def resolve(url, variables, blocks, verbose = false)
     puts "🌊 [verbose] Resolving URL: #{url}" if verbose
 
@@ -295,8 +314,11 @@ class Matcher
 end
 
 
-# ==================== 加载 proxydeploy@*.txt 开始 ====================
+# ============================================================================
+# 配置文件加载器
+# ============================================================================
 
+# 加载并解析配置文件，返回变量、规则块和错误列表
 def load_config(verbose = false)
   config_name = ENV['WAVEPROXY_CONFIG'] || 'default'
   config_path = CONFIG_DIR + "proxydeploy@#{config_name}.txt"
@@ -326,9 +348,12 @@ def load_config(verbose = false)
   [parser.variables, parser.blocks, parser.errors]
 end
 
-# ==================== 加载 proxydeploy@*.txt 结束 ====================
 
+# ============================================================================
+# 帮助与主程序
+# ============================================================================
 
+# 打印帮助信息（含颜色）
 def print_help
   puts "\033[35musage: \033[38;5;197mwaveproxy <command> [url] [flags]\033[0m"
   puts
@@ -345,12 +370,14 @@ def print_help
   puts "  \033[32m-V, --version\033[0m       Show program's version number and exit"
   puts "  \033[32m-s, --silent\033[0m        Suppress all non-output messages (for scripting)"
   puts "  \033[32m-v, --verbose\033[0m       Enable detailed debug output (stderr)"
+  puts "  \033[32m-f, --fail\033[0m           Exit with non-zero code on error (like curl -f)"
   puts
   puts "For more details, visit: https://proxy.macwave.org"
 end
 
-
+# 主程序入口
 def main
+  # 如果没有参数，显示用法并退出
   if ARGV.empty?
     puts "Usage: waveproxy query <url>"
     exit 1
@@ -368,13 +395,22 @@ def main
     exit 0
   end
 
+  # 检查 -f / --fail（新增功能）
+  fail_on_error = false
+  if ARGV.include?('-f') || ARGV.include?('--fail')
+    fail_on_error = true
+    ARGV.delete('-f')
+    ARGV.delete('--fail')
+  end
+
   # 检查 commandreference 子命令
   if ARGV[0] == 'commandreference'
     ref_path = CONFIG_DIR + 'COMMAND_REFERENCE.txt'
     if ref_path.exist?
       puts ref_path.read
     else
-      puts "Error: COMMAND_REFERENCE.txt not found."
+      $stderr.puts "Error: COMMAND_REFERENCE.txt not found."
+      exit 1 if fail_on_error
     end
     exit 0
   end
@@ -395,35 +431,45 @@ def main
     ARGV.delete('--silent')
   end
 
+  # 如果不是 query 命令，报错并退出
   if ARGV[0] != 'query'
     puts "Usage: waveproxy query <url>"
+    exit 1 if fail_on_error
     exit 1
   end
 
+  # 获取 URL 参数
   url = ARGV[1]
   if url.nil? || url.empty?
-    puts "Usage: waveproxy query <url>"
+    $stderr.puts "Usage: waveproxy query <url>"
+    exit 1 if fail_on_error
     exit 1
   end
 
   puts "🌊 [verbose] Querying URL: #{url}" if verbose
 
+  # 加载配置文件
   variables, blocks, errors = load_config(verbose)
 
+  # 如果有错误，输出错误信息并按 -f 决定退出码
   unless errors.empty?
-    errors.each { |err| puts err }
+    errors.each { |err| $stderr.puts err }
+    exit 1 if fail_on_error
     exit 1
   end
 
+  # 如果没有规则块，返回 None
   if blocks.empty?
     puts "🌊 [verbose] No rules found, returning None" if verbose
     puts "None"
     exit 0
   end
 
+  # 匹配 URL
   matcher = Matcher.new
   result = matcher.resolve(url, variables, blocks, verbose)
 
+  # 输出结果
   if result.nil?
     puts "None"
   else
@@ -431,4 +477,5 @@ def main
   end
 end
 
+# 执行主程序
 main if __FILE__ == $0
