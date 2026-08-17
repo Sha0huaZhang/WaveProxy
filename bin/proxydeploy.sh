@@ -2,7 +2,7 @@
 # proxydeploy.sh - 配置管理工具
 # 用于查看、编辑、切换 WaveProxy 配置文件
 
-# 显示帮助
+# 显示帮助（含示例）
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo -e "\033[35musage: \033[38;5;197mproxydeploy <subcommand> [@config_name] [flags]\033[0m"
     echo
@@ -18,6 +18,25 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo -e "\033[35mFlags:\033[0m"
     echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
     echo
+    echo -e "\033[35mExamples:\033[0m"
+    echo "  # View current default config name"
+    echo "  \033[32mproxydeploy\033[0m"
+    echo ""
+    echo "  # View default config content"
+    echo "  \033[32mproxydeploy list\033[0m"
+    echo ""
+    echo "  # View a specific config"
+    echo "  \033[32mproxydeploy list @work\033[0m"
+    echo ""
+    echo "  # Edit default config with nano"
+    echo "  \033[32mproxydeploy edit\033[0m"
+    echo ""
+    echo "  # Edit a specific config"
+    echo "  \033[32mproxydeploy edit @work\033[0m"
+    echo ""
+    echo "  # Switch default config to 'work'"
+    echo "  \033[32mproxydeploy run --change-to-default @work @main\033[0m"
+    echo ""
     echo "For more details, visit: https://waveproxy.org"
     exit 0
 fi
