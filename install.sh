@@ -40,10 +40,10 @@ echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 ln -sf ~/.local/waveproxy/bin/waveproxy.py ~/.local/waveproxy/bin/waveproxy
 echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.py${NC}"
 
-# 5. 创建默认配置文件
-if [ ! -f ~/.local/waveproxy/proxydeploy@main.txt ]; then
+# 5. 创建默认配置文件（改为 default）
+if [ ! -f ~/.local/waveproxy/proxydeploy@default.txt ]; then
     echo "🌊 Generating default config file..."
-    curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/config/proxydeploy@main.txt -o ~/.local/waveproxy/proxydeploy@main.txt
+    curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/config/proxydeploy@default.txt -o ~/.local/waveproxy/proxydeploy@default.txt
     echo -e "${GREEN}🌊 Default config file generated successfully${NC}"
 fi
 
@@ -69,5 +69,5 @@ echo "  proxydeploy                         # Show current default config name"
 echo "  proxydeploy edit                    # Edit default config"
 echo "  proxydeploy list @work              # View work config"
 echo ""
-echo -e "${GREEN}🌊 Config file: ~/.local/waveproxy/proxydeploy@main.txt${NC}"
+echo -e "${GREEN}🌊 Config file: ~/.local/waveproxy/proxydeploy@default.txt${NC}"
 echo -e "${RED}🌊 Uninstall: rm -rf ~/.local/waveproxy${NC}"
