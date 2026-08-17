@@ -16,6 +16,13 @@ waveproxy query <url>
       > "socks5://127.0.0.1:1080"
 
 
+waveproxy commandreference
+    Print the complete command reference file.
+
+    Example:
+      waveproxy commandreference
+
+
 proxywrap <command> [args...]
     Wrap any command with automatic proxy injection.
     
@@ -45,13 +52,13 @@ proxydeploy
     
     Example:
       proxydeploy
-      > main
+      > default
 
 
 proxydeploy list [@name]
     View the content of a config file.
     
-    Without @name : Show the default config (main)
+    Without @name : Show the default config (default)
     With @name    : Show the specified config
     
     Examples:
@@ -80,11 +87,11 @@ proxydeploy run --change-to-default @new @old
       @old  : The current default config name (for confirmation)
     
     What it does:
-      1. Copies proxydeploy@new.txt to proxydeploy@main.txt
+      1. Copies proxydeploy@new.txt to proxydeploy@default.txt
       2. Updates WAVEPROXY_CONFIG environment variable to @new
     
     Example:
-      proxydeploy run --change-to-default @work @main
+      proxydeploy run --change-to-default @work @default
 
 
 3. Environment Variable
@@ -101,7 +108,7 @@ WAVEPROXY_CONFIG
       waveproxy query github.com
     
     Switch back to default:
-      export WAVEPROXY_CONFIG=main
+      export WAVEPROXY_CONFIG=default
 
 
 4. Installation & Uninstallation
@@ -122,7 +129,7 @@ Uninstall:
 │   ├── waveproxy.py
 │   ├── proxywrap.sh
 │   └── proxydeploy
-├── proxydeploy@main.txt      # Default config
+├── proxydeploy@default.txt   # Default config
 ├── proxydeploy@work.txt      # Work config
 ├── proxydeploy@home.txt      # Home config
 └── README.md
@@ -134,6 +141,7 @@ Uninstall:
 Command                                    Description
 ------------------------------------------ -----------------------------------------
 waveproxy query <url>                      Query proxy for a URL
+waveproxy commandreference                 Print command reference
 proxywrap <command>                        Auto-inject proxy into any command
 proxydeploy                                Show current default config name
 proxydeploy list                           View default config content
@@ -152,7 +160,7 @@ You can use it as a template to create your own rules.
 
 <!--
     WaveProxy default configuration file
-    Location: ~/.local/waveproxy/proxydeploy@main.txt
+    Location: ~/.local/waveproxy/proxydeploy@default.txt
     Edit with: proxydeploy edit
 -->
 
@@ -167,7 +175,7 @@ def proxy:
         "github.com/**"
         "raw.githubusercontent.com/**"
         "api.github.com/**"
-        ! "**.github.com/**" unless "https://github.com/**" "raw.githubusercontent.com/**" "api.github.com/**"
+        ! "**github.com/**" unless "https://github.com/**" "raw.githubusercontent.com/**" "api.github.com/**"
         ! "gitlab.internal.company.com"
         ! "mirrors.company.com"
         ! "**.local/**"
