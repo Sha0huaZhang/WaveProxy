@@ -114,19 +114,37 @@ class ProxyParser:
                 # 解析匹配模式 "pattern"
                 if stripped.startswith('"') and not stripped.endswith(' direct'):
                     pattern = stripped.strip('"')
-                    if '*' in pattern and '**' in pattern:
-                        self.errors.append(f"Line {self.line_num}: cannot use both * and ** in same proxy block")
+                    # ========== 修复：正确判断 * 和 ** 冲突 ==========
+                    # 只有当 pattern 中真正有独立的 '*'（不属于 '**'）时，才报错
+                    if '**' in pattern:
+                        # 把 '**' 全部替换为空，再数剩下的 '*'
+                        remaining_stars = pattern.replace('**', '').count('*')
+                        if remaining_stars > 0:
+                            self.errors.append(f"Line {self.line_num}: cannot use both * and ** in same proxy block")
+                    # ====================================================
                     current_block.patterns.append(pattern)
                 
                 # 解析排除项 ! "pattern"
                 elif stripped.startswith('! "') and ' unless ' not in stripped:
                     pattern = stripped.replace('! "', '').rstrip('"')
+                    # ========== 修复：同样处理排除项 ==========
+                    if '**' in pattern:
+                        remaining_stars = pattern.replace('**', '').count('*')
+                        if remaining_stars > 0:
+                            self.errors.append(f"Line {self.line_num}: cannot use both * and ** in same proxy block")
+                    # =============================================
                     current_block.excludes.append(ExcludeRule(pattern))
                 
                 # 解析排除项带白名单 ! "pattern" unless "a" "b"
                 elif stripped.startswith('! "') and ' unless ' in stripped:
                     parts = stripped.split(' unless ')
                     pattern = parts[0].replace('! "', '').rstrip('"')
+                    # ========== 修复：同样处理排除项 ==========
+                    if '**' in pattern:
+                        remaining_stars = pattern.replace('**', '').count('*')
+                        if remaining_stars > 0:
+                            self.errors.append(f"Line {self.line_num}: cannot use both * and ** in same proxy block")
+                    # =============================================
                     unless_parts = parts[1].strip()
                     unless_list = [p.strip('"') for p in unless_parts.split() if p.strip('"')]
                     if not unless_list:
@@ -136,6 +154,12 @@ class ProxyParser:
                 # 解析直连 "pattern" direct
                 elif stripped.endswith(' direct'):
                     pattern = stripped.replace(' direct', '').strip('"')
+                    # ========== 修复：同样处理直连 ==========
+                    if '**' in pattern:
+                        remaining_stars = pattern.replace('**', '').count('*')
+                        if remaining_stars > 0:
+                            self.errors.append(f"Line {self.line_num}: cannot use both * and ** in same proxy block")
+                    # ============================================
                     current_block.direct_rules.append(pattern)
                 
                 # 解析备选 ? "name"
