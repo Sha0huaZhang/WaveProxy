@@ -257,7 +257,8 @@ class Matcher:
 # ==================== 加载 proxydeploy@*.txt 开始 ====================
 
 def load_config(verbose=False) -> Tuple[Dict[str, str], List[ProxyRuleBlock], List[str]]:
-    config_name = os.environ.get('WAVEPROXY_CONFIG', 'main')
+    # 默认配置名改为 default
+    config_name = os.environ.get('WAVEPROXY_CONFIG', 'default')
     config_path = Path.home() / '.local' / 'waveproxy' / f'proxydeploy@{config_name}.txt'
     
     if verbose:
