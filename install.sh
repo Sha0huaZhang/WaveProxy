@@ -41,19 +41,14 @@ echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 ln -sf ~/.local/waveproxy/bin/waveproxy.py ~/.local/waveproxy/bin/waveproxy
 echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.py${NC}"
 
-# 5. 创建默认配置文件（改为 default）
+# 5. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@default.txt ]; then
     echo "🌊 Generating default config file..."
     curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/config/proxydeploy@default.txt -o ~/.local/waveproxy/proxydeploy@default.txt
     echo -e "${GREEN}🌊 Default config file generated successfully${NC}"
 fi
 
-# 6. 下载 README
-echo "🌊 Downloading README.md..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/docs/README.md -o ~/.local/waveproxy/README.md
-echo -e "${GREEN}🌊 README.md downloaded successfully${NC}"
-
-# 7. 将 bin 加入 PATH
+# 6. 将 bin 加入 PATH
 if ! echo "$PATH" | grep -q "$HOME/.local/waveproxy/bin"; then
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.bashrc
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.zshrc
