@@ -20,7 +20,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo -e "\033[35mFlags:\033[0m"
     echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
     echo
-    echo "For more details, visit: https://waveproxy.org"
+    echo "For more details, visit: https://proxy.macwave.org"
     exit 0
 fi
 
@@ -38,7 +38,7 @@ if [ -z "$URL" ]; then
 fi
 
 # 获取代理（返回 "代理地址" 或 None）
-PROXY=$(waveproxy.py query "$URL" 2>/dev/null || echo "None")
+PROXY=$(waveproxy query "$URL" 2>/dev/null || echo "None")
 
 # === 显式参数类（需要 -x / --proxy 等参数） ===
 case "$1" in
