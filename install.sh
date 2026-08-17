@@ -7,6 +7,7 @@ set -e
 # 颜色定义
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+YELLOW='\033[0;33m'
 NC='\033[0m'
 
 echo "🌊 Installing WaveProxy v1.0..."
@@ -71,3 +72,4 @@ echo "  proxydeploy list @work              # View work config"
 echo ""
 echo -e "${GREEN}🌊 Config file: ~/.local/waveproxy/proxydeploy@default.txt${NC}"
 echo -e "${RED}🌊 Uninstall: rm -rf ~/.local/waveproxy${NC}"
+echo -e "${YELLOW}🌊 Tip: Run 'source ~/.zshrc' or restart your terminal to use waveproxy immediately.${NC}"
