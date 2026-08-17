@@ -9,7 +9,7 @@ __pycache__/
 
 # 用户配置（不追踪）
 proxydeploy@*.txt
-!proxydeploy@main.txt
+!proxydeploy@default.txt
 
 # 编辑器
 *.swp
