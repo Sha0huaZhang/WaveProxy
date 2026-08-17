@@ -2,6 +2,26 @@
 # proxydeploy.sh - 配置管理工具
 # 用于查看、编辑、切换 WaveProxy 配置文件
 
+# 显示帮助
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    echo -e "\033[35musage: \033[38;5;197mproxydeploy <subcommand> [@config_name] [flags]\033[0m"
+    echo
+    echo "proxydeploy 1.0.0 🌊"
+    echo "Configuration management tool for WaveProxy."
+    echo
+    echo -e "\033[35mSubcommands:\033[0m"
+    echo "  \033[32mproxydeploy\033[0m               Show current default config name"
+    echo "  \033[32mlist\033[0m [@name]             View config content (default: main)"
+    echo "  \033[32medit\033[0m [@name]             Edit config with nano (default: main)"
+    echo "  \033[32mrun --change-to-default @new @old\033[0m  Switch default config"
+    echo
+    echo -e "\033[35mFlags:\033[0m"
+    echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
+    echo
+    echo "For more details, visit: https://waveproxy.org"
+    exit 0
+fi
+
 CONFIG_DIR="$HOME/.local/waveproxy"
 DEFAULT_NAME="main"
 
