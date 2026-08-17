@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # WaveProxy - 命令行代理决策工具
 # 版本: 1.0.0
 # 用法: waveproxy query <url> [flags]
@@ -11,8 +13,10 @@ require 'fileutils'
 VERSION = "1.0.0"
 # 用户主目录
 HOME = Pathname.new(Dir.home)
-# 配置文件存放目录
+# 配置文件存放目录（硬编码，符合规范）
 CONFIG_DIR = HOME.join('.local', 'waveproxy')
+# 缩进标准（4 空格）
+INDENT_SIZE = 4
 
 
 # ============================================================================
@@ -130,10 +134,10 @@ class ProxyParser
 
       # 解析规则块内的内容
       if current_block
-        # 检查缩进（必须是 4 的倍数）
+        # 检查缩进（使用 INDENT_SIZE 常量）
         indent = line.length - line.lstrip.length
-        unless indent % 4 == 0
-          @errors << "Line #{@line_num}: indentation must be multiple of 4, got #{indent}"
+        unless indent % INDENT_SIZE == 0
+          @errors << "Line #{@line_num}: indentation must be multiple of #{INDENT_SIZE}, got #{indent}"
         end
 
         # 解析匹配模式 "pattern"
@@ -231,23 +235,30 @@ end
 
 
 # ============================================================================
-# URL 匹配引擎
+# URL 匹配引擎（带正则缓存）
 # ============================================================================
 
 class Matcher
+  def initialize
+    @regex_cache = {}
+  end
+
   # 判断 URL 是否匹配模式（支持 * 和 **）
   def match_pattern(url, pattern)
-    if pattern.include?('**')
-      regex = Regexp.new('^' + Regexp.escape(pattern).gsub('\\*\\*', '.*') + '$')
-      return !!(url =~ regex)
+    unless @regex_cache.key?(pattern)
+      if pattern.include?('**')
+        @regex_cache[pattern] = Regexp.new('^' + Regexp.escape(pattern).gsub('\\*\\*', '.*') + '$')
+      elsif pattern.include?('*')
+        @regex_cache[pattern] = Regexp.new('^' + Regexp.escape(pattern).gsub('\\*', '[^/]*') + '$')
+      else
+        @regex_cache[pattern] = pattern
+      end
     end
 
-    if pattern.include?('*')
-      regex = Regexp.new('^' + Regexp.escape(pattern).gsub('\\*', '[^/]*') + '$')
-      return !!(url =~ regex)
-    end
+    cached = @regex_cache[pattern]
+    return url == cached if cached.is_a?(String)
 
-    url == pattern
+    !!(url =~ cached)
   end
 
   # 按优先级解析 URL，返回代理地址或 nil
@@ -395,7 +406,7 @@ def main
     exit 0
   end
 
-  # 检查 -f / --fail（新增功能）
+  # 检查 -f / --fail
   fail_on_error = false
   if ARGV.include?('-f') || ARGV.include?('--fail')
     fail_on_error = true
@@ -442,6 +453,15 @@ def main
   url = ARGV[1]
   if url.nil? || url.empty?
     $stderr.puts "Usage: waveproxy query <url>"
+    exit 1 if fail_on_error
+    exit 1
+  end
+
+  # 验证 URL 格式（安全措施）
+  begin
+    URI.parse(url)
+  rescue URI::InvalidURIError
+    $stderr.puts "Error: invalid URL '#{url}'"
     exit 1 if fail_on_error
     exit 1
   end
