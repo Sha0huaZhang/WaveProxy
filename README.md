@@ -25,7 +25,7 @@ In the terminal, run the following command:
 # 🌊 Commands for WaveProxy
 
 
-** Main Program 
+Main Program 
 ---------------
 ```
 waveproxy query <url>                      # Query proxy for a URL
@@ -39,7 +39,9 @@ waveproxy -f / --fail                      # Exit with non-zero code on error
 
 Wrapper
 ----------
+```
 proxywrap <any command>                    # Auto-inject proxy into any command
+```
 
 
 Configuration Management
@@ -66,10 +68,12 @@ WAVEPROXY_CONFIG=name waveproxy query <url> # Temporarily switch config (single 
 
                             
 
-🌊 Config File Syntax
+Config File Syntax
 ---------------------
-File location: ~/.local/waveproxy/proxydeploy@name.txt
+```File location: ~/.local/waveproxy/proxydeploy@name.txt```
 
+
+```
 Basic structure:
   def proxy:
       let "variable" = "proxy_url"
@@ -128,11 +132,12 @@ Complete example config:
           ? "home"
           default: "home"
   ]
+```
 
 
-🌊 Local File Structure
+Local File Structure
 -----------------------
-~/.local/waveproxy/
+```~/.local/waveproxy/
 ├── bin/
 │   ├── waveproxy.rb           # Main program (Ruby core)
 │   ├── waveproxy -> waveproxy.rb
