@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 环境文件
+.env
+*.log
+
+# 用户配置（不追踪）
+proxydeploy@*.txt
+!proxydeploy@main.txt
+
+# 编辑器
+*.swp
+*.swo
+*~
+.DS_Store
