@@ -50,7 +50,6 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 fi
 
 CONFIG_DIR="$HOME/.local/waveproxy"
-# 默认配置名改为 default
 DEFAULT_NAME="default"
 
 # 获取当前默认配置名（从环境变量或默认）
@@ -62,7 +61,7 @@ shift 2>/dev/null || true
 
 case "$CMD" in
     status|"")
-        echo "$CURRENT_NAME"
+        echo "🌊 $CURRENT_NAME"
         ;;
     
     list)
@@ -72,7 +71,7 @@ case "$CMD" in
         if [ -f "$CONFIG_FILE" ]; then
             cat "$CONFIG_FILE"
         else
-            echo "None"
+            echo "🌊 None"
             exit 1
         fi
         ;;
@@ -82,7 +81,7 @@ case "$CMD" in
         TARGET="${TARGET#@}"
         CONFIG_FILE="$CONFIG_DIR/proxydeploy@${TARGET}.txt"
         if [ ! -f "$CONFIG_FILE" ]; then
-            echo "📄 Creating new config: proxydeploy@${TARGET}.txt"
+            echo "🌊 Creating new config: proxydeploy@${TARGET}.txt"
             touch "$CONFIG_FILE"
         fi
         nano "$CONFIG_FILE"
@@ -95,22 +94,22 @@ case "$CMD" in
             
             NEW_FILE="$CONFIG_DIR/proxydeploy@${NEW_NAME}.txt"
             if [ ! -f "$NEW_FILE" ]; then
-                echo "Error: Config not found: proxydeploy@${NEW_NAME}.txt"
+                echo "🌊 Error: Config not found: proxydeploy@${NEW_NAME}.txt"
                 exit 1
             fi
             
             OLD_FILE="$CONFIG_DIR/proxydeploy@${OLD_NAME}.txt"
             if [ ! -f "$OLD_FILE" ]; then
-                echo "Warning: Old config not found: proxydeploy@${OLD_NAME}.txt"
+                echo "🌊 Warning: Old config not found: proxydeploy@${OLD_NAME}.txt"
             fi
             
-            echo "Switching default config from $OLD_NAME to $NEW_NAME"
+            echo "🌊 Switching default config from $OLD_NAME to $NEW_NAME"
             cp "$NEW_FILE" "$CONFIG_DIR/proxydeploy@default.txt"
             
-            echo "export WAVEPROXY_CONFIG=$NEW_NAME" > "$CONFIG_DIR/.default_config"
+            echo "🌊 export WAVEPROXY_CONFIG=$NEW_NAME" > "$CONFIG_DIR/.default_config"
             
             echo "🌊 Default config updated to: $NEW_NAME"
-            echo "WaveProxy will use $NEW_NAME on next query."
+            echo "🌊 WaveProxy will use $NEW_NAME on next query."
             exit 0
         fi
 
@@ -121,8 +120,8 @@ case "$CMD" in
                 echo "🌊 None"
                 exit 1
             fi
-            # 提取第一个 let "name" = "url" 中的 name
-            WORKING_PROXY=$(grep -m 1 '^[[:space:]]*let "' "$CONFIG_FILE" | sed -n 's/.*let "\([^"]*\)".*/\1/p')
+            # 修复：忽略注释行，只找真正的 let 定义
+            WORKING_PROXY=$(grep -v '^[[:space:]]*<!--' "$CONFIG_FILE" | grep -m 1 '^[[:space:]]*let "' | sed -n 's/.*let "\([^"]*\)".*/\1/p')
             if [ -z "$WORKING_PROXY" ]; then
                 echo "🌊 None"
             else
@@ -138,8 +137,8 @@ case "$CMD" in
                 echo "🌊 None"
                 exit 1
             fi
-            # 提取第一个 let "name" = "url" 中的 name
-            DEFAULT_PROXY=$(grep -m 1 '^[[:space:]]*let "' "$DEFAULT_CONFIG" | sed -n 's/.*let "\([^"]*\)".*/\1/p')
+            # 修复：忽略注释行，只找真正的 let 定义
+            DEFAULT_PROXY=$(grep -v '^[[:space:]]*<!--' "$DEFAULT_CONFIG" | grep -m 1 '^[[:space:]]*let "' | sed -n 's/.*let "\([^"]*\)".*/\1/p')
             if [ -z "$DEFAULT_PROXY" ]; then
                 echo "🌊 None"
             else
@@ -148,13 +147,13 @@ case "$CMD" in
             exit 0
         fi
 
-        echo "Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy"
+        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy"
         exit 1
         ;;
     
     *)
-        echo "Unknown command: $CMD"
-        echo "Available commands: status, list, edit, run"
+        echo "🌊 Unknown command: $CMD"
+        echo "🌊 Available commands: status, list, edit, run"
         exit 1
         ;;
 esac
