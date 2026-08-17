@@ -17,19 +17,19 @@ mkdir -p ~/.local/waveproxy/bin
 
 # 2. 下载主程序
 echo "🌊 Downloading waveproxy.rb..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/waveproxy.rb -o ~/.local/waveproxy/bin/waveproxy.rb
+curl -L https://proxy.macwave.org/bin/waveproxy.rb -o ~/.local/waveproxy/bin/waveproxy.rb
 chmod +x ~/.local/waveproxy/bin/waveproxy.rb
 echo -e "${GREEN}🌊 waveproxy.rb downloaded successfully${NC}"
 
 # 3. 下载 proxywrap.sh
 echo "🌊 Downloading proxywrap.sh..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxywrap.sh -o ~/.local/waveproxy/bin/proxywrap.sh
+curl -L https://proxy.macwave.org/bin/proxywrap.sh -o ~/.local/waveproxy/bin/proxywrap.sh
 chmod +x ~/.local/waveproxy/bin/proxywrap.sh
 echo -e "${GREEN}🌊 proxywrap.sh downloaded successfully${NC}"
 
 # 4. 下载 proxydeploy.sh
 echo "🌊 Downloading proxydeploy.sh..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
+curl -L https://proxy.macwave.org/bin/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
 chmod +x ~/.local/waveproxy/bin/proxydeploy.sh
 echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 
@@ -49,13 +49,13 @@ echo -e "${GREEN}🌊 Created symlink: proxywrap -> proxywrap.sh${NC}"
 # 5. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@default.txt ]; then
     echo "🌊 Generating default config file..."
-    curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/config/proxydeploy@default.txt -o ~/.local/waveproxy/proxydeploy@default.txt
+    curl -L https://proxy.macwave.org/config/proxydeploy@default.txt -o ~/.local/waveproxy/proxydeploy@default.txt
     echo -e "${GREEN}🌊 Default config file generated successfully${NC}"
 fi
 
 # 6. 下载命令参考文件
 echo "🌊 Downloading COMMAND_REFERENCE.txt..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/COMMAND_REFERENCE.txt -o ~/.local/waveproxy/COMMAND_REFERENCE.txt
+curl -L https://proxy.macwave.org/COMMAND_REFERENCE.txt -o ~/.local/waveproxy/COMMAND_REFERENCE.txt
 echo -e "${GREEN}🌊 COMMAND_REFERENCE.txt downloaded successfully${NC}"
 
 # 7. 将 bin 加入 PATH
