@@ -12,8 +12,7 @@ NC='\033[0m'
 
 echo "🌊 Installing WaveProxy v1.0..."
 
-# 1. 创建目录
-mkdir -p ~/.local/waveproxy/bin
+# 1. 创建目录mkdir -p ~/.local/waveproxy/bin
 
 # 2. 下载主程序
 echo "🌊 Downloading waveproxy.py..."
@@ -48,7 +47,12 @@ if [ ! -f ~/.local/waveproxy/proxydeploy@default.txt ]; then
     echo -e "${GREEN}🌊 Default config file generated successfully${NC}"
 fi
 
-# 6. 将 bin 加入 PATH
+# 6. 下载命令参考文件
+echo "🌊 Downloading COMMAND_REFERENCE.txt..."
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/COMMAND_REFERENCE.txt -o ~/.local/waveproxy/COMMAND_REFERENCE.txt
+echo -e "${GREEN}🌊 COMMAND_REFERENCE.txt downloaded successfully${NC}"
+
+# 7. 将 bin 加入 PATH
 if ! echo "$PATH" | grep -q "$HOME/.local/waveproxy/bin"; then
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.bashrc
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.zshrc
