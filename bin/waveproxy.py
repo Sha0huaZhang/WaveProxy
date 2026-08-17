@@ -4,6 +4,7 @@ WaveProxy - 命令行代理决策工具
 配置文件：~/.local/waveproxy/proxydeploy@名称.txt
 用法：
     waveproxy query <url>          # 查询代理
+    waveproxy commandreference     # 查看完整命令参考
 """
 
 import sys
@@ -159,8 +160,7 @@ class ProxyParser:
                 else:
                     self.errors.append(f"Line {self.line_num}: unknown keyword '{stripped}'")
             
-            # ========== 修复：解析规则块标签 ==========
-            # 原来会报错 "proxy variable not defined"，现在允许任何标签
+            # 修复：解析规则块标签
             elif not in_def_proxy and stripped.endswith(':'):
                 # 去掉冒号和引号，得到块标签
                 label = stripped.rstrip(':').strip('"')
@@ -296,6 +296,7 @@ def print_waveproxy_help():
     print("\033[35mCommands:\033[0m")
     print("  \033[32mquery <url>\033[0m          Query the proxy for a given URL")
     print("                          Output: \"proxy\" or None")
+    print("  \033[32mcommandreference\033[0m     Print the complete command reference")
     print()
     print("\033[35mFlags:\033[0m")
     print("  \033[32m-h, --help\033[0m          Show this help message and exit")
@@ -319,6 +320,15 @@ def main():
     # 检查 -h / --help
     if '-h' in sys.argv or '--help' in sys.argv:
         print_waveproxy_help()
+        sys.exit(0)
+
+    # 检查 commandreference 子命令
+    if sys.argv[1] == 'commandreference':
+        ref_path = Path.home() / '.local' / 'waveproxy' / 'COMMAND_REFERENCE.txt'
+        if ref_path.exists():
+            print(ref_path.read_text())
+        else:
+            print("Error: COMMAND_REFERENCE.txt not found.")
         sys.exit(0)
 
     # 检查 -v / --verbose
