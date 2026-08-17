@@ -159,13 +159,13 @@ class ProxyParser:
                 else:
                     self.errors.append(f"Line {self.line_num}: unknown keyword '{stripped}'")
             
-            # 检测代理变量名（规则块开始前的行）
+            # ========== 修复：解析规则块标签 ==========
+            # 原来会报错 "proxy variable not defined"，现在允许任何标签
             elif not in_def_proxy and stripped.endswith(':'):
-                var_name = stripped.rstrip(':')
-                if var_name in self.variables:
-                    current_block = ProxyRuleBlock(var_name)
-                else:
-                    self.errors.append(f"Line {self.line_num}: proxy variable '{var_name}' not defined")
+                # 去掉冒号和引号，得到块标签
+                label = stripped.rstrip(':').strip('"')
+                # 直接创建规则块，不需要检查变量是否存在
+                current_block = ProxyRuleBlock(label)
             
             i += 1
         
