@@ -1,5 +1,7 @@
 #!/bin/bash
 # proxywrap.sh - 通用包装器
+# 支持: curl, wget, git, wave, npm, yarn, pnpm, pip, pip3, poetry, 
+#       docker, podman, apt, apt-get, yum, dnf, pacman, zypper, brew, port
 
 # 从参数里找 URL
 URL=""
@@ -17,13 +19,20 @@ fi
 # 获取代理（返回 "代理地址" 或 None）
 PROXY=$(waveproxy.py query "$URL" 2>/dev/null || echo "None")
 
-# 根据命令类型注入代理
+# === 显式参数类（需要 -x / --proxy 等参数） ===
 case "$1" in
     curl)
         if [ "$PROXY" != "None" ]; then
             exec curl -x "$PROXY" "${@:2}"
         else
             exec curl "${@:2}"
+        fi
+        ;;
+    wget)
+        if [ "$PROXY" != "None" ]; then
+            exec wget -e use_proxy=yes -e http_proxy="$PROXY" "${@:2}"
+        else
+            exec wget "${@:2}"
         fi
         ;;
     git)
@@ -40,12 +49,27 @@ case "$1" in
             exec wave "${@:2}"
         fi
         ;;
+    # === 环境变量类（设置 http_proxy 即可） ===
+    brew|port|npm|yarn|pnpm|pip|pip3|poetry|docker|podman|apt|apt-get|yum|dnf|pacman|zypper)
+        if [ "$PROXY" != "None" ]; then
+            export http_proxy="$PROXY"
+            export https_proxy="$PROXY"
+            export HTTP_PROXY="$PROXY"
+            export HTTPS_PROXY="$PROXY"
+            export all_proxy="$PROXY"
+            export ALL_PROXY="$PROXY"
+        fi
+        exec "$@"
+        ;;
+    # === 默认：走环境变量 ===
     *)
         if [ "$PROXY" != "None" ]; then
             export http_proxy="$PROXY"
             export https_proxy="$PROXY"
             export HTTP_PROXY="$PROXY"
             export HTTPS_PROXY="$PROXY"
+            export all_proxy="$PROXY"
+            export ALL_PROXY="$PROXY"
         fi
         exec "$@"
         ;;
