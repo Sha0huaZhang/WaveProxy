@@ -14,6 +14,8 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo "  \033[32mlist\033[0m [@name]             View config content (default: default)"
     echo "  \033[32medit\033[0m [@name]             Edit config with nano (default: default)"
     echo "  \033[32mrun --change-to-default @new @old\033[0m  Switch default config"
+    echo "  \033[32mrun --print-working-proxy\033[0m  Print the currently active proxy variable"
+    echo "  \033[32mrun --print-default-proxy\033[0m   Print the default proxy variable from the config"
     echo
     echo -e "\033[35mFlags:\033[0m"
     echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
@@ -36,6 +38,12 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo ""
     echo "  # Switch default config to 'work'"
     echo "  \033[32mproxydeploy run --change-to-default @work @default\033[0m"
+    echo ""
+    echo "  # Print current working proxy"
+    echo "  \033[32mproxydeploy run --print-working-proxy\033[0m"
+    echo ""
+    echo "  # Print default proxy from config"
+    echo "  \033[32mproxydeploy run --print-default-proxy\033[0m"
     echo ""
     echo "For more details, visit: https://waveproxy.org"
     exit 0
@@ -103,10 +111,45 @@ case "$CMD" in
             
             echo "🌊 Default config updated to: $NEW_NAME"
             echo "WaveProxy will use $NEW_NAME on next query."
-        else
-            echo "Usage: proxydeploy run --change-to-default @new @old"
-            exit 1
+            exit 0
         fi
+
+        if [ "$1" = "--print-working-proxy" ]; then
+            # 从当前配置中读取第一个 let 变量名
+            CONFIG_FILE="$CONFIG_DIR/proxydeploy@${CURRENT_NAME}.txt"
+            if [ ! -f "$CONFIG_FILE" ]; then
+                echo "None"
+                exit 1
+            fi
+            # 提取第一个 let "name" = "url" 中的 name
+            WORKING_PROXY=$(grep -m 1 '^[[:space:]]*let "' "$CONFIG_FILE" | sed -n 's/.*let "\([^"]*\)".*/\1/p')
+            if [ -z "$WORKING_PROXY" ]; then
+                echo "None"
+            else
+                echo "$WORKING_PROXY"
+            fi
+            exit 0
+        fi
+
+        if [ "$1" = "--print-default-proxy" ]; then
+            # 从默认配置中读取第一个 let 变量名
+            DEFAULT_CONFIG="$CONFIG_DIR/proxydeploy@default.txt"
+            if [ ! -f "$DEFAULT_CONFIG" ]; then
+                echo "None"
+                exit 1
+            fi
+            # 提取第一个 let "name" = "url" 中的 name
+            DEFAULT_PROXY=$(grep -m 1 '^[[:space:]]*let "' "$DEFAULT_CONFIG" | sed -n 's/.*let "\([^"]*\)".*/\1/p')
+            if [ -z "$DEFAULT_PROXY" ]; then
+                echo "None"
+            else
+                echo "$DEFAULT_PROXY"
+            fi
+            exit 0
+        fi
+
+        echo "Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy"
+        exit 1
         ;;
     
     *)
