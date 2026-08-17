@@ -16,19 +16,19 @@ mkdir -p ~/.local/waveproxy/bin
 
 # 2. 下载主程序
 echo "🌊 Downloading waveproxy.py..."
-curl -L https://waveproxy.org/v1.0/waveproxy.py -o ~/.local/waveproxy/bin/waveproxy.py
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/waveproxy.py -o ~/.local/waveproxy/bin/waveproxy.py
 chmod +x ~/.local/waveproxy/bin/waveproxy.py
 echo -e "${GREEN}🌊 waveproxy.py downloaded successfully${NC}"
 
 # 3. 下载 proxywrap.sh
 echo "🌊 Downloading proxywrap.sh..."
-curl -L https://waveproxy.org/v1.0/proxywrap.sh -o ~/.local/waveproxy/bin/proxywrap.sh
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxywrap.sh -o ~/.local/waveproxy/bin/proxywrap.sh
 chmod +x ~/.local/waveproxy/bin/proxywrap.sh
 echo -e "${GREEN}🌊 proxywrap.sh downloaded successfully${NC}"
 
 # 4. 下载 proxydeploy.sh
 echo "🌊 Downloading proxydeploy.sh..."
-curl -L https://waveproxy.org/v1.0/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
 chmod +x ~/.local/waveproxy/bin/proxydeploy.sh
 echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 
@@ -39,13 +39,13 @@ echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 # 5. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@main.txt ]; then
     echo "🌊 Generating default config file..."
-    curl -L https://waveproxy.org/v1.0/proxydeploy@main.txt -o ~/.local/waveproxy/proxydeploy@main.txt
+    curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/config/proxydeploy@main.txt -o ~/.local/waveproxy/proxydeploy@main.txt
     echo -e "${GREEN}🌊 Default config file generated successfully${NC}"
 fi
 
 # 6. 下载 README
 echo "🌊 Downloading README.md..."
-curl -L https://waveproxy.org/v1.0/README.md -o ~/.local/waveproxy/README.md
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/docs/README.md -o ~/.local/waveproxy/README.md
 echo -e "${GREEN}🌊 README.md downloaded successfully${NC}"
 
 # 7. 将 bin 加入 PATH
