@@ -12,7 +12,7 @@ NC='\033[0m'
 
 echo "🌊 Installing WaveProxy v1.0..."
 
-# 1. 创建目录（必须保留）
+# 1. 创建目录
 mkdir -p ~/.local/waveproxy/bin
 
 # 2. 下载主程序
@@ -33,13 +33,18 @@ curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxyd
 chmod +x ~/.local/waveproxy/bin/proxydeploy.sh
 echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 
-# 创建不带 .sh 的软链接
+# ========== 创建软链接 ==========
+# 为 proxydeploy.sh 创建软链接
 ln -sf ~/.local/waveproxy/bin/proxydeploy.sh ~/.local/waveproxy/bin/proxydeploy
 echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 
 # 为 waveproxy.py 创建软链接
 ln -sf ~/.local/waveproxy/bin/waveproxy.py ~/.local/waveproxy/bin/waveproxy
 echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.py${NC}"
+
+# 新增：为 proxywrap.sh 创建软链接
+ln -sf ~/.local/waveproxy/bin/proxywrap.sh ~/.local/waveproxy/bin/proxywrap
+echo -e "${GREEN}🌊 Created symlink: proxywrap -> proxywrap.sh${NC}"
 
 # 5. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@default.txt ]; then
