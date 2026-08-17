@@ -1,6 +1,6 @@
 <!--
     WaveProxy default configuration file
-    Location: ~/.local/waveproxy/proxydeploy@main.txt
+    Location: ~/.local/waveproxy/proxydeploy@default.txt
     Edit with: proxydeploy edit
 -->
 
