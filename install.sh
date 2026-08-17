@@ -36,6 +36,10 @@ echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 ln -sf ~/.local/waveproxy/bin/proxydeploy.sh ~/.local/waveproxy/bin/proxydeploy
 echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 
+# === 新增：为 waveproxy.py 创建软链接 ===
+ln -sf ~/.local/waveproxy/bin/waveproxy.py ~/.local/waveproxy/bin/waveproxy
+echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.py${NC}"
+
 # 5. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@main.txt ]; then
     echo "🌊 Generating default config file..."
