@@ -1,1 +1,630 @@
-<!-- 1 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>WaveProxy</title>
+    <style>
+        body {
+            background-color: #8ec4e9;
+            color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .logo-wrapper {
+            background-color: #ffffff;
+            border-radius: 30px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            display: block;
+            border-radius: 0;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            max-width: 800px;
+            text-align: left;
+        }
+
+        .btn-github {
+            display: inline-block;
+            background-color: #ffffff;
+            color: #0a1b3f;
+            padding: 14px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-github:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.2);
+        }
+
+        .code-container {
+            position: relative;
+            margin-bottom: 20px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        pre {
+            background-color: #1e2a4a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            color: #d4d4d4;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            border: 1px solid #3a4a6a;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            text-align: left;
+            margin: 0;
+            padding-right: 70px;
+        }
+
+        .code-dollar {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .copy-icon {
+            position: relative;
+            width: 18px;
+            height: 18px;
+        }
+
+        .square-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #a0b0d0;
+            border-radius: 2px;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+
+        .square-front {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #a0b0d0;
+            border-radius: 2px;
+            background-color: rgba(30, 42, 74, 0.4);
+            transition: all 0.2s ease;
+            transform: translate(-4.5px, -4.5px);
+        }
+
+        .copy-btn:hover .square-back,
+        .copy-btn:hover .square-front {
+            border-color: #ffffff;
+        }
+
+        .copy-btn.copied .square-back,
+        .copy-btn.copied .square-front {
+            background-color: #ffffff;
+            border-color: transparent;
+            opacity: 1;
+        }
+
+        .contact-section {
+            margin-top: 40px;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .contact-section h2 {
+            font-size: 2rem;
+            color: #1a1a1a;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .contact-divider {
+            width: 60px;
+            height: 2px;
+            background-color: #4a90e2;
+            margin: 0 auto 20px auto;
+        }
+
+        .contact-items {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+            font-size: 1.1rem;
+        }
+
+        .contact-label {
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+
+        .contact-item a {
+            color: #1a1a1a;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+
+        .contact-hint {
+            font-size: 0.85rem;
+            color: #1a1a1a;
+            opacity: 0.7;
+            margin-top: 6px;
+        }
+
+        .disclaimer-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-top: 20px;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        .disclaimer {
+            font-size: 0.75rem;
+            color: #1a1a1a;
+            opacity: 0.7;
+            line-height: 0.8;
+            word-wrap: break-word;
+        }
+
+        .disclaimer p {
+            margin-bottom: 4px;
+            padding-left: 2em;
+            text-indent: -2em;
+        }
+
+        .install-note {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            max-width: 800px;
+            text-align: left;
+            color: #1a1a1a;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .install-note strong {
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .install-note .small-link-text {
+            font-size: 0.825rem;
+            display: inline-block;
+        }
+        .install-note a {
+            color: #1a1a1a;
+            text-decoration: underline;
+        }
+        .install-note a:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo Section -->
+    <div class="logo-wrapper">
+        <img src="logo1.jpg" alt="MW Icon" class="logo-img">
+        <img src="logo2.jpg" alt="WaveProxy Text" class="logo-img">
+    </div>
+
+    <p>A lightweight embedded command-line proxy configuration tool.</p>
+
+    <!-- Latest Version -->
+    <p style="color: #1a1a1a; font-size: 0.95rem; margin-top: -10px; margin-bottom: 30px; opacity: 0.7;">
+        Latest Official Version : 1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Latest Beta Version : 1.0 RC4v2
+    </p>
+
+    <a href="https://github.com/Sha0huaZhang/MacWave" class="btn-github">View On GitHub</a>
+    
+    <!-- Main Content -->
+    <div class="content-section" style="margin: 0 auto; padding: 20px; color: #1a1a1a; text-align: left;">
+
+        <h2 style="font-size: 1.8rem; border-bottom: 2px solid #4a90e2; padding-bottom: 10px;">What is WaveProxy?</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9;">
+            WaveProxy is a <strong>lightweight embedded command-line proxy configuration tool</strong> written by <strong>Ruby and Shell</strong>, which aimed at resolving <strong>the inconvenience of quickly switching proxies and configuring proxies in batches</strong>.Previously (especially with <strong>GUI tools</strong>), switching proxies and configuring them in batches was a hassle—but now, all you need is <strong>a terminal</strong>.
+        </p>
+
+        <h2 style="font-size: 1.8rem; border-bottom: 2px solid #4a90e2; padding-bottom: 10px; margin-top: 40px;">Install WaveProxy(latest version)</h2>
+        
+        <p class="install-note">
+            Before installing WaveProxy, you need to install <strong>Python</strong>(3.13 and above), view at <a href="https://python.org" target="_blank">python.org</a> <span class="small-link-text">(Click link to open)</span>
+        </p>
+
+        <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9;">
+            In the terminal, run the following command:
+        </p>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">
+                <div class="copy-icon">
+                    <div class="square-back"></div>
+                    <div class="square-front"></div>
+                </div>
+            </button>
+            <pre><span class="code-dollar">$</span> /bin/bash -c "$(curl -fsSL https://proxy.macwave.org/install.sh)"</pre>
+        </div>
+
+        <div class="warning-box" style="background-color: #1e2a4a; border-left: 6px solid #f1c40f; padding: 15px 20px; border-radius: 8px; margin-top: 20px;">
+            <p style="margin: 0; font-size: 1rem; line-height: 1.5; color: #f1c40f; font-weight: bold;">
+                Important:
+            </p>
+            <p style="margin: 10px 0 0 0; font-size: 1rem; line-height: 1.5; color: #ffffff;">
+                After installation, <strong>restart your terminal</strong> or <strong>run the following command</strong> to apply PATH changes immediately:
+            </p>
+            <div class="code-container" style="margin-top: 10px;">
+                <button class="copy-btn" onclick="copyCode(this)">
+                    <div class="copy-icon">
+                        <div class="square-back"></div>
+                        <div class="square-front"></div>
+                    </div>
+                </button>
+                <pre><span class="code-dollar">$</span> source ~/.zshrc</pre>
+            </div>
+            <p style="margin: 10px 0 0 0; font-size: 1rem; line-height: 1.5; color: #a0b0d0; font-style: italic;">
+                (If you are using bash instead of zsh, run <code style="background-color: #0f1a30; padding: 2px 6px; border-radius: 4px;">source ~/.bashrc</code>)
+            </p>
+        </div>
+
+        <h2 style="font-size: 1.8rem; border-bottom: 2px solid #4a90e2; padding-bottom: 10px; margin-top: 40px;">Uninstall WaveProxy</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9;">
+            To completely remove WaveProxy from your system, run the following command in your terminal:
+        </p>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">
+                <div class="copy-icon">
+                    <div class="square-back"></div>
+                    <div class="square-front"></div>
+                </div>
+            </button>
+            <pre>/bin/bash -c "INSTALL_DIR=\"\$HOME/.local/waveproxy\"; echo -e \"\033[31mYou are deleting WaveProxy, are you sure? [Y/n]\033[0m\"; read -n 1 -r; echo; if [[ ! \$REPLY =~ ^[Yy]\$ ]]; then echo \"🌊 Uninstall cancelled.\"; exit 0; fi; if [ -d \"\$INSTALL_DIR\" ]; then echo \"🌊 Removing \$INSTALL_DIR...\"; rm -rf \"\$INSTALL_DIR\"; else echo \"🌊 WaveProxy installation directory not found. Skipping.\"; fi; for RC_FILE in \"\$HOME/.zshrc\" \"\$HOME/.bashrc\"; do if [ -f \"\$RC_FILE\" ]; then sed -i '' '/# WaveProxy/d' \"\$RC_FILE\" 2>/dev/null || true; sed -i '' '/export PATH=\".*waveproxy\/bin/d' \"\$RC_FILE\" 2>/dev/null || true; echo \"🌊 Removed WaveProxy PATH entries from \$RC_FILE\"; fi; done; echo \"\"; echo \"🌊 WaveProxy has been uninstalled.\"; echo \"🌊 Please restart your terminal to apply changes.\""</pre>
+        </div>
+
+        <div class="warning-box" style="background-color: #1e2a4a; border-left: 6px solid #f1c40f; padding: 15px 20px; border-radius: 8px; margin-top: 20px;">
+            <p style="margin: 0; font-size: 1rem; line-height: 1.5; color: #f1c40f; font-weight: bold;">
+                Important:
+            </p>
+            <p style="margin: 10px 0 0 0; font-size: 1rem; line-height: 1.5; color: #ffffff;">
+                This command <strong>permanently removes WaveProxy and its configuration files</strong>. Make sure you have <strong>copied the entire command correctly</strong> before pressing Enter.
+            </p>
+        </div>
+
+        <h2 style="font-size: 1.8rem; border-bottom: 2px solid #4a90e2; padding-bottom: 10px; margin-top: 40px;">Download Directory</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9;">
+            Installed binaries are stored in:
+        </p>
+        <div class="code-container">
+            <pre>~/.local/waveproxy/bin</pre>
+        </div>
+
+        <h2 style="font-size: 1.8rem; border-bottom: 2px solid #4a90e2; padding-bottom: 10px; margin-top: 40px;">Special Thanks</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; color: #1a1a1a; opacity: 1;">
+            <strong>Haxx</strong> (Daniel Stenberg, Linus, Bjorn, Kjell, et al.) for <strong>cURL</strong>
+        </p>
+
+        <!-- ================== Commands for WaveProxy Section ================== -->
+        <h2 style="font-size: 1.8rem; border-bottom: 2px solid #4a90e2; padding-bottom: 10px; margin-top: 40px;">Commands for WaveProxy</h2>
+
+        <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-top: 25px; margin-bottom: 10px;">Main Program</h3>
+        <div class="code-container">
+            <pre>waveproxy query &lt;url&gt;            # Query proxy for a URL
+waveproxy commandreference       # Print the complete command reference
+waveproxy -h, --help             # Show help information
+waveproxy -V, --version          # Show version number
+waveproxy -s, --silent           # Silent mode (output result only)
+waveproxy -v, --verbose          # Verbose mode (output debug info)
+waveproxy -f, --fail             # Exit with non-zero code on error
+waveproxy --help-all             # Show help for all three commands
+waveproxy query &lt;url&gt; --once     # Apply once-only logic to this query</pre>
+        </div>
+
+        <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-top: 25px; margin-bottom: 10px;">Wrapper</h3>
+        <div class="code-container">
+            <pre>proxywrap &lt;any command&gt;     # Auto-inject proxy into any command
+proxywrap --help-all        # Show help for all three commands</pre>
+        </div>
+
+        <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-top: 25px; margin-bottom: 10px;">Configuration Management</h3>
+        <div class="code-container">
+            <pre>proxydeploy                                     # Show current default config name
+proxydeploy list                                # View default config content
+proxydeploy list @name                          # View specified config content
+proxydeploy edit                                # Edit default config
+proxydeploy edit @name                          # Edit specified config
+
+proxydeploy run --change-to-default @new @old   # Switch default config
+proxydeploy run --print-working-proxy           # Print current working proxy
+proxydeploy run --print-default-proxy           # Print default proxy
+
+proxydeploy run --print-detailed-working-proxy  # Print detailed current config
+proxydeploy run --print-detailed-default-proxy  # Print detailed default config
+proxydeploy run --print-detailed-all-proxy      # Print detailed ALL configs
+proxydeploy run --print-all-proxy               # List all configs with markers
+
+proxydeploy run --create-new-proxy @name        # Create and edit a new config
+proxydeploy run --enforce-proxy @name [--once]  # Enforce config (session or once)
+proxydeploy run --enforce-proxy "url" [--once]  # Enforce proxy address (session or once)
+proxydeploy run --ignore-proxy @name [--once]   # Ignore config (session or once)
+proxydeploy run --ignore-proxy "url" [--once]   # Ignore proxy address (session or once)
+proxydeploy run --provisional-start             # Start provisional mode
+proxydeploy run --provisional-end               # End provisional mode
+
+proxydeploy -h, --help                          # Show help information
+proxydeploy --help-all                          # Show help for all three commands</pre>
+        </div>
+
+        <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-top: 25px; margin-bottom: 10px;">Environment Variable</h3>
+        <div class="code-container">
+            <pre>export WAVEPROXY_CONFIG=name                # Switch to specified config
+WAVEPROXY_CONFIG=name waveproxy query &lt;url&gt; # Temporarily switch config (single command)</pre>
+        </div>
+
+        <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-top: 25px; margin-bottom: 10px;">Config File Syntax</h3>
+        <div class="code-container">
+            <pre>File location: ~/.local/waveproxy/proxydeploy@name.txt
+
+Basic structure:
+  def proxy:
+      let "variable" = "proxy_url"
+
+  [proxy_rule:
+      "variable":
+          "pattern"
+          "pattern"
+          ! "exclude_pattern" unless "whitelist1" "whitelist2"
+          "pattern" direct
+          ? "fallback_variable"
+          default: "fallback_variable"
+  ]
+
+Element reference:
+  let "name" = "url"              Define a proxy variable
+  "pattern"                       Match URL pattern (supports * or **)
+  ! "pattern"                     Exclude matching URLs (do not use proxy)
+  ! "pattern" unless "a" "b" ...  Exclude, but skip exclusion if whitelist matches
+  "pattern" direct                Force direct connection
+  ? "name"                        Fallback proxy
+  default: "name"                 Default proxy if no other rule matches
+
+Wildcards:
+  *      Matches one path segment (does not include '/')
+  **     Matches any depth (including empty)
+
+Priority (highest to lowest):
+  1. direct
+  2. ! exclusion (unless whitelist matches)
+  3. "pattern" match
+  4. ? fallback
+  5. default
+
+Indentation rules:
+  Must use 4 spaces. Tab is not allowed.
+  All rules inside a block must be aligned at the same indent level.
+
+Complete example config:
+  def proxy:
+      let "home" = "socks5://127.0.0.1:1080"
+      let "work" = "http://proxy.company.com:8080"
+
+  [proxy_rule:
+      "home":
+          "github.com/**"
+          "raw.githubusercontent.com/**"
+          "api.github.com/**"
+          ! "**.github.com/**" unless "https://github.com/**" "raw.githubusercontent.com/**" "api.github.com/**"
+          ! "gitlab.internal.company.com"
+          ! "mirrors.company.com"
+          ! "**.local/**"
+
+      "work":
+          "internal.company.com" direct
+          ? "home"
+          default: "home"
+  ]</pre>
+        </div>
+
+        <h3 style="font-size: 1.3rem; color: #1a1a1a; margin-top: 25px; margin-bottom: 10px;">Local File Structure</h3>
+        <div class="code-container">
+            <pre>├── bin/
+│   ├── waveproxy.rb           # Main program (Ruby core)
+│   ├── waveproxy -> waveproxy.rb
+│   ├── proxywrap.sh           # Universal wrapper
+│   ├── proxywrap -> proxywrap.sh
+│   ├── proxydeploy.sh         # Configuration management tool
+│   └── proxydeploy -> proxydeploy.sh
+├── proxydeploy@default.txt    # Default config file
+└── COMMAND_REFERENCE.txt      # Complete command reference</pre>
+        </div>
+        <!-- ================== End Commands for WaveProxy Section ================== -->
+
+        <h2 style="font-size: 1.8rem; border-bottom: 2px solid #4a90e2; padding-bottom: 10px; margin-top: 40px;">License</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9;">
+            This project is licensed under the <strong>MIT License</strong>.
+        </p>
+
+    </div>
+
+    <!-- Contact Us -->
+    <div class="contact-section">
+        <h2>Contact Us</h2>
+        <div class="contact-divider"></div>
+        <div class="contact-items">
+            <div class="contact-item">
+                <span class="contact-label">Twitter</span>
+                <a href="https://twitter.com/MacWave_Official" target="_blank">@MacWave_Official</a>
+            </div>
+            <div class="contact-item">
+                <span class="contact-label">Email</span>
+                <a href="mailto:hi@macwave.org">hi@macwave.org</a>
+            </div>
+        </div>
+        <div class="contact-hint">Click the links to open.</div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer-container">
+        <div class="disclaimer">
+
+            <!-- English Section -->
+            <p>1. WaveProxy is a sub-project of the MacWave team. Users should carefully read the agreement and possible negative impacts before operation, and bear the consequences themselves. Using WaveProxy means that you have agreed to the above conditions. WaveProxy is not responsible for any losses caused to users.</p>
+            <p>2. WaveProxy (especially beta versions) may affect users due to code defects, security issues, etc. Users should be aware of and accept this risk, otherwise please do not use it. WaveProxy is not responsible for any losses caused to users' devices, etc.</p>
+            <p>3. WaveProxy only invokes or switches VPNs and network proxies. It does not provide VPNs or network proxies themselves. WaveProxy is not responsible for any losses caused to users due to security vulnerabilities, malicious code, etc. of the VPNs or network proxies themselves. If users violate the VPN or network proxy usage agreement, WaveProxy is not responsible.</p>
+            <p>4. Please ensure that the VPN or network proxy invoked by WaveProxy is legal. If the invoked VPN or network proxy violates local laws, regulations, or other provisions, WaveProxy is not responsible.</p>
+            <p>5. VPNs or network proxies invoked by WaveProxy may terminate or suspend services due to policy adjustments or business adjustments. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>6. WaveProxy is for legitimate purposes only and is prohibited for illegal activities. If losses are caused by improper use, WaveProxy is not responsible.</p>
+            <p>7. This agreement may be updated. If there is an update and you do not agree to the updated agreement, please delete WaveProxy. For deletion methods, please refer to the official website or official tutorial.</p>
+            <p>8. Please be sure to download the official software from the WaveProxy official website. If users download WaveProxy software from unofficial sources and suffer losses, WaveProxy is not responsible.</p>
+            <p>9. Users should read all agreements in full and agree before using WaveProxy. Otherwise, please do not use WaveProxy.</p>
+            <p>10. WaveProxy is completely free. Please do not trust any individuals or claims stating that WaveProxy charges a fee. If you suffer losses as a result, WaveProxy is not responsible.</p>
+            <p>11. WaveProxy does not sell any products. Any messages or posts about paid WaveProxy products are counterfeit. Any individuals or platforms selling WaveProxy are unofficial. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>12. WaveProxy does not produce any physical products. Any physical products (such as books, comics, etc.) claiming to be related to WaveProxy are counterfeit. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>13. WaveProxy only produces code, not unrelated products. Any e-books, audio-visual works, etc. claiming to be related to WaveProxy are counterfeit. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>14. WaveProxy's consultation and feedback channels are completely free, and all feedback is processed equally in order. Any individuals or organizations claiming priority access to consultation or replies, especially those charging fees, are unofficial. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>15. WaveProxy does not use subscriptions, one-time purchases, or in-app purchases. Any individuals or organizations claiming to help obtain in-app purchases, especially those charging fees, are unofficial. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>16. WaveProxy's source code is fully open. Any individuals or organizations claiming to provide core code, especially those charging fees, are unofficial. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>17. The only official website is https://proxy.macwave.org. Any other websites are not official. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>18. WaveProxy does not use a membership system. Any individuals or organizations claiming to offer memberships, especially those charging fees, are unofficial. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>19. WaveProxy has only one official version, and it is publicly available. There are no "Personal Edition", "Enterprise Edition", "Custom Edition", or similar variants. Any such claims are counterfeit. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>20. Using WaveProxy does not require registration, nor does it require activation codes, etc. Any individuals or organizations claiming to help register WaveProxy accounts, provide WaveProxy accounts, activation codes, etc., especially those charging fees, are unofficial. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>21. Downloading WaveProxy may consume network data. Users should be aware of this and handle it properly. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>22. Contacting WaveProxy official support or sending emails may consume network data. Users should be aware of this and handle it properly. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>23. Official accounts (MacWave) are only registered on Twitter (X) and GitHub. Any accounts on other platforms are counterfeit. MacWave is not responsible for any losses caused by this.</p>
+            <p>24. The only official feedback email address is hi@macwave.org, but replies will be sent from trollresignertest1@outlook.com. Please do not send messages directly to trollresignertest1@outlook.com, and do not wait for reply emails from hi@macwave.org. Do not trust other email addresses claimed by others or organizations as official, and do not treat replies from other emails as official replies. WaveProxy is not responsible for any losses caused by this.</p>
+            <p>25. Users should use WaveProxy and the VPN or network proxy in accordance with official guidelines. WaveProxy is not responsible for any losses caused by not following the guidelines, not reading the guidelines, or operational errors.</p>
+            <p>26. Users should download WaveProxy on eligible devices. For specific requirements, please refer to the official website. If losses are caused by violations, WaveProxy is not responsible.</p>
+            <p>27. Users should confirm their system environment, device model, etc., and verify from reliable sources (such as official documentation of other software) whether there are conflicts. If losses are caused by software conflicts, WaveProxy is not responsible.</p>
+            <p>28. Users are only permitted to run WaveProxy on their personal devices. WaveProxy is not responsible for any losses caused by running WaveProxy on others' devices, public devices, or devices without the owner's authorization.</p>
+            <p>29. WaveProxy is not responsible for any losses caused by running WaveProxy due to bugs in the operating system or virtual machine itself.</p>
+            <p>30. WaveProxy is not responsible for any losses caused by WaveProxy not running as expected due to unauthorized hardware modifications.</p>
+            <p>31. WaveProxy is not responsible for any losses caused by using it for unofficial purposes.</p>
+            <p>32. Private redistribution of WaveProxy and its software packages, modified versions, etc., is permitted, but the original author and official website must be credited, and others must be clearly informed that this version is a modified version. Distributing non-official products and software packages under descriptions such as "official version" is prohibited. Non-official versions of WaveProxy may also cause losses. If any of these violations cause losses, MacWave is not responsible.</p>
+            <p>33. Without the permission of the original author, you shall not misuse, reuse, register trademarks, or otherwise occupy the WaveProxy icon and its name, or occupy them in a way that sufficiently associates users with them.</p>
+            <p>34. WaveProxy is not responsible for any losses caused by incomplete downloads of executable scripts due to network fluctuations, etc.</p>
+            <p>35. WaveProxy is not responsible for any losses suffered by users due to force majeure.</p>
+            <p>36. WaveProxy has no cooperation with any company or profit-making organization. Any claims of cooperation with WaveProxy by companies or profit-making organizations are counterfeit. WaveProxy is not responsible for any losses caused by this.</p>
+
+            <br><br>
+
+            <!-- Chinese Section -->
+            <p>1. WaveProxy隶属于MacWave团队。用户在操作前应仔细阅读协议及可能造成的负面影响，并自行承担后果，使用WaveProxy即视为已达成上述条件。对使用者造成损失的，WaveProxy不承担责任</p>
+            <p>2. WaveProxy（尤其是beta版）可能由于自身代码缺陷、安全问题等对用户造成影响，用户应知悉并接受这一风险，否则请勿使用。对用户的设备等造成损失的，WaveProxy不承担责任</p>
+            <p>3. WaveProxy仅调用或切换VPN和网络代理。不提供VPN和网络代理本身。因VPN或网络代理本身的安全漏洞、恶意代码等对用户造成损失的，WaveProxy不承担责任。用户如果违反VPN或网络代理的使用协议，WaveProxy不承担责任。</p>
+            <p>4. 请确保被WaveProxy调用的VPN或网络代理合法，若调用的VPN或网络代理违反当地法律法规或其他规定，WaveProxy不承担责任。</p>
+            <p>5. WaveProxy调用的VPN或网络代理可能会因为政策调整、业务调整的原因终止服务、暂停服务等。由此造成损失的，WaveProxy不承担责任。</p>
+            <p>6. WaveProxy仅供正当用途，禁止用于违法行为。如果用于不正当用途造成损失，WaveProxy不承担责任</p>
+            <p>7. 本协议可能会有更新。如有，且你不同意更新后的协议，请删除WaveProxy，删除方法参见官网或官方教程</p>
+            <p>8. 请务必从WaveProxy官方网站下载正版软件。如果用户从非官方渠道下载的WaveProxy软件造成损失，WaveProxy不承担责任</p>
+            <p>9. 用户应完整阅读所有协议并同意后再使用WaveProxy，否则请勿使用WaveProxy</p>
+            <p>10. WaveProxy完全免费，请勿相信任何宣称WaveProxy收费的言论、人员等。因此蒙受损失的，WaveProxy不承担责任</p>
+            <p>11. WaveProxy不出售任何产品。任何有关WaveProxy收费产品的消息、帖子等均属伪造，任何出售WaveProxy的个人、平台等均为非官方，由此造成损失的，WaveProxy不承担责任</p>
+            <p>12. WaveProxy不产出任何实体产品。任何有关WaveProxy的实体产品（如书籍、漫画等）均属伪造。由此造成损失的，WaveProxy不承担责任</p>
+            <p>13. WaveProxy仅产出代码，不产出无关产品。任何有关WaveProxy的电子书、音像制品等均属伪造。由此造成损失的，WaveProxy不承担责任</p>
+            <p>14. WaveProxy的咨询和反馈平台完全免费，且按顺序平等处理所有反馈。任何宣称可以优先获得咨询、回复等，尤其是收取费用的的个人或组织均为非官方。由此造成损失的，WaveProxy不承担责任</p>
+            <p>15. WaveProxy不使用订阅制、买断制或内购，任何宣称可以帮忙获取内购的个人、组织等，尤其是收取费用的均为非官方。由此造成损失的，WaveProxy不承担责任。</p>
+            <p>16. WaveProxy的源代码全部公开。任何宣称可以提供核心代码的个人、组织等，尤其是收取费用的均为非官方。由此造成损失的，WaveProxy不承担责任。</p>
+            <p>17. 官方唯一网址为https://proxy.macwave.org，其他网址均不是官方网址。因此造成损失的，WaveProxy不承担责任。</p>
+            <p>18. WaveProxy不使用会员制。任何宣称可以申请会员的个人、组织等，尤其是收取费用的均为非官方。由此造成损失的，WaveProxy不承担责任。</p>
+            <p>19. WaveProxy只有一个官方版本，且公开。不存在“个人版”“企业版”“定制版”或类似内容，如有，均属伪造。由此造成损失的，WaveProxy不承担责任。</p>
+            <p>20. 使用WaveProxy无需注册，也没有激活码等，任何宣称可以帮忙注册WaveProxy账号，提供WaveProxy账号、激活码等的个人、组织等，尤其是收取费用的均为非官方。由此造成损失的，WaveProxy不承担责任。</p>
+            <p>21. 下载WaveProxy可能会消耗网络流量，下载前须知悉并妥善处理，否则造成损失的，WaveProxy不承担责任</p>
+            <p>22. 向WaveProxy官方咨询、发送邮件等可能消耗网络流量，下载前须知悉并妥善处理，否则造成损失的，WaveProxy不承担责任</p>
+            <p>23. 官方账号（MacWave）仅在Twitter（X）、GitHub注册，其他平台如有则均为仿造。因此造成损失的，MacWave不承担责任</p>
+            <p>24. WaveProxy唯一反馈邮箱地址为hi@macwave.org，但回复你的邮箱地址为trollresignertest1@outlook.com。请勿直接向trollresignertest1@outlook.com发送信息，也不要等待hi@macwave.org的回复邮件。不要相信他人或组织等声称的其他邮箱地址，不要向其他邮箱视为官方邮箱发送邮件，也不要将其他邮箱的回复视为官方回复。由此造成损失的，WaveProxy不承担责任。</p>
+            <p>25. 用户应按照官方指导使用WaveProxy及VPN或网络代理。对于不按照指导、不阅读指导、操作失误等原因导致损失的，WaveProxy不承担责任</p>
+            <p>26. 用户应在符合条件的设备下载WaveProxy，具体要求参见官网。如有违反导致损失，WaveProxy不承担责任</p>
+            <p>27. 用户应确认自己的系统环境、设备型号等信息，并从可信来源（如其他软件的官方说明等）确认是否冲突。如果由于软件冲突导致损失，WaveProxy不承担责任</p>
+            <p>28. 用户仅可在个人设备运行WaveProxy，在他人、公共设备或未经持有者授权设备运行WaveProxy造成损失的，WaveProxy不承担责任</p>
+            <p>29. 由于操作系统或虚拟机自身的Bug导致用户运行WaveProxy造成损失的，WaveProxy不承担责任</p>
+            <p>30. 由于私自改装硬件设备等原因导致WaveProxy未按预期运行并导致损失的，WaveProxy不承担责任</p>
+            <p>31. 用于非官方用途导致损失的，WaveProxy不承担责任</p>
+            <p>32. 允许私自分发WaveProxy及其软件包、修改版等，但必须注明原作者及官方网站，并明确告知其他人此版本为改版，禁止以“官方正版”等描述分发非正版产品及软件包。非官方版本可能也会造成损失。如果违反且造成损失，MacWave不承担责任</p>
+            <p>33. 未经原作者允许，不得以滥用、复用、注册商标等方式侵占WaveProxy图标及其名称，或以充分使用户联想、关联的方式侵占</p>
+            <p>34. 由于网络波动等原因导致软件可执行脚本下载不全并造成损失的，WaveProxy不承担责任</p>
+            <p>35. 由于不可抗力因素导致用户蒙受损失的，WaveProxy不承担责任</p>
+            <p>36. WaveProxy未与任何公司或营利组织等产生合作，如有公司或营利组织等声称与WaveProxy合作均属伪造。由此造成损失的，WaveProxy不承担责任</p>
+
+        </div>
+    </div>
+
+    <!-- JavaScript for Copy Functionality -->
+    <script>
+        function copyCode(btn) {
+            const pre = btn.parentElement.querySelector('pre');
+            if (!pre) return;
+            let text = pre.textContent;
+            text = text.replace(/^\$\s/, '');
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    </script>
+
+</body>
+</html>
