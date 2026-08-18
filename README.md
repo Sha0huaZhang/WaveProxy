@@ -28,22 +28,22 @@ In the terminal, run the following command:
 Main Program 
 ---------------
 ```
-waveproxy query <url>                      # Query proxy for a URL
-waveproxy commandreference                 # Print the complete command reference
-waveproxy -h, --help                       # Show help information
-waveproxy -V, --version                    # Show version number
-waveproxy -s, --silent                     # Silent mode (output result only)
-waveproxy -v, --verbose                    # Verbose mode (output debug info)
-waveproxy -f, --fail                       # Exit with non-zero code on error
-waveproxy --help-all                       # Show help for all three commands
-waveproxy query <url> --once               # Apply once-only logic to this query
+waveproxy query <url>            # Query proxy for a URL
+waveproxy commandreference       # Print the complete command reference
+waveproxy -h, --help             # Show help information
+waveproxy -V, --version          # Show version number
+waveproxy -s, --silent           # Silent mode (output result only)
+waveproxy -v, --verbose          # Verbose mode (output debug info)
+waveproxy -f, --fail             # Exit with non-zero code on error
+waveproxy --help-all             # Show help for all three commands
+waveproxy query <url> --once     # Apply once-only logic to this query
 ```
 
 Wrapper
 ----------
 ```
-proxywrap <any command>                    # Auto-inject proxy into any command
-proxywrap --help-all                       # Show help for all three commands```
+proxywrap <any command>     # Auto-inject proxy into any command
+proxywrap --help-all        # Show help for all three commands```
 ```
 
 Configuration Management
