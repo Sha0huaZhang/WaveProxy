@@ -24,6 +24,22 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     exit 0
 fi
 
+# --- 处理 --help-all ---
+if [[ "$1" == "--help-all" ]]; then
+    echo -e "\033[35m==== proxywrap (auto-inject wrapper) ====\033[0m"
+    # 复用 -h 的打印逻辑（直接调用自身 -h）
+    $0 -h
+    echo -e "\033[35m========================================\033[0m"
+    echo
+    echo -e "\033[35m==== waveproxy (proxy decision engine) ====\033[0m"
+    waveproxy -h 2>/dev/null || echo "🌊 waveproxy command not found."
+    echo -e "\033[35m==========================================\033[0m"
+    echo
+    echo -e "\033[35m==== proxydeploy (configuration management) ====\033[0m"
+    proxydeploy -h 2>/dev/null || echo "🌊 proxydeploy command not found."
+    exit 0
+fi
+
 # 从参数里找 URL
 URL=""
 for arg in "$@"; do
