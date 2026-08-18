@@ -4,11 +4,11 @@
 # Ruby 源文件
 *.rb linguist-language=Ruby
 
-# Shell 脚本保持正常统计（不隐藏，按实际比例显示）
-*.sh linguist-language=Shell
+# Shell 脚本按照Ruby统计，为了解决Ruby小于50%导致WaveProxy被误判为Shell项目的问题
+*.sh linguist-language=Ruby
 
-# 配置文件保持正常统计
-*.txt linguist-language=Text
+# 配置文件同上
+*.txt linguist-language=Ruby
 
 # Markdown 文档归为文档
 *.md linguist-documentation
