@@ -4,7 +4,8 @@
 # Ruby 源文件
 *.rb linguist-language=Ruby
 
-*.sh linguist-language=Shell
+# 给Ruby凑个数
+*.sh linguist-language=Ruby
 
 # 给Ruby凑个数
 *.txt linguist-language=Ruby
