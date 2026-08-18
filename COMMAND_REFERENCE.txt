@@ -1,5 +1,5 @@
-WaveProxy Command Reference (v1.0)
-==================================
+🌊 WaveProxy Command Reference
+================================
 
 1. Core Commands
 ----------------
@@ -23,28 +23,39 @@ waveproxy commandreference
       waveproxy commandreference
 
 
-proxywrap <command> [args...]
-    Wrap any command with automatic proxy injection.
-    
-    How it works:
-      1. Extracts the URL from the command arguments
-      2. Calls waveproxy query to get the proxy
-      3. Injects proxy automatically based on command type
-    
-    Supported commands:
-      curl   -> -x "$PROXY"
-      git    -> -c http.proxy="$PROXY"
-      wave   -> --proxy "$PROXY"
-      others -> http_proxy environment variable
-    
-    Examples:
-      proxywrap curl -LO https://example.com/file.zip
-      proxywrap git clone https://github.com/xxx/yyy.git
-      proxywrap brew install node
-      proxywrap wave install some-package --ver 1.0
+waveproxy -h, --help
+    Show help information.
+
+waveproxy -V, --version
+    Show version number.
+
+waveproxy -s, --silent
+    Silent mode (output result only).
+
+waveproxy -v, --verbose
+    Verbose mode (output debug info).
+
+waveproxy -f, --fail
+    Exit with non-zero code on error.
+
+waveproxy --help-all
+    Show help for all three commands (waveproxy, proxydeploy, proxywrap).
+
+waveproxy query <url> --once
+    Apply once-only logic to this specific query.
 
 
-2. Configuration Management (proxydeploy)
+2. Wrapper
+----------
+
+proxywrap <any command>
+    Auto-inject proxy into any command.
+
+proxywrap --help-all
+    Show help for all three commands.
+
+
+3. Configuration Management (proxydeploy)
 -----------------------------------------
 
 proxydeploy
@@ -79,6 +90,13 @@ proxydeploy edit [@name]
       proxydeploy edit @work
 
 
+proxydeploy -h, --help
+    Show help information.
+
+proxydeploy --help-all
+    Show help for all three commands.
+
+
 proxydeploy run --change-to-default @new @old
     Switch the default config to another one.
     
@@ -110,7 +128,117 @@ proxydeploy run --print-default-proxy
       > home
 
 
-3. Environment Variable
+proxydeploy run --print-detailed-working-proxy
+    Print detailed content of the current config.
+    
+    Example:
+      proxydeploy run --print-detailed-working-proxy
+      > ==== work ====
+      > <content of work>
+      >                                      ----working
+
+
+proxydeploy run --print-detailed-default-proxy
+    Print detailed content of the default config.
+    
+    Example:
+      proxydeploy run --print-detailed-default-proxy
+      > ==== default ====
+      > <content of default>
+      >                                      ----default
+
+
+proxydeploy run --print-detailed-all-proxy
+    Print detailed content of ALL configs.
+    
+    Example:
+      proxydeploy run --print-detailed-all-proxy
+      > ==== default ====
+      > <content of default>
+      >                                      ----default
+      > 
+      > ==== work ====
+      > <content of work>
+      >                                      ----working
+
+
+proxydeploy run --print-all-proxy
+    List all available configs with right-aligned markers.
+    
+    Example:
+      proxydeploy run --print-all-proxy
+      > default                   ----default
+      > home
+      > work                      ----working
+
+
+proxydeploy run --create-new-proxy @name
+    Create a new config file and open it with nano.
+    If the file already exists, it opens it for editing.
+
+    Example:
+      proxydeploy run --create-new-proxy @project
+      > (opens nano with proxydeploy@project.txt)
+
+
+proxydeploy run --enforce-proxy @name [--once]
+    Force WaveProxy to use a specific config.
+    Without --once: stays active until terminal closes.
+    With --once:    affects only the next query.
+
+    Example:
+      proxydeploy run --enforce-proxy @work
+      > 🌊 Config 'work' enforced for current session.
+
+
+proxydeploy run --enforce-proxy "proxy_url" [--once]
+    Force WaveProxy to return a specific proxy address.
+    Without --once: stays active until terminal closes.
+    With --once:    affects only the next query.
+
+    Example:
+      proxydeploy run --enforce-proxy "socks5://127.0.0.1:1080"
+      > 🌊 Proxy 'socks5://127.0.0.1:1080' enforced.
+
+
+proxydeploy run --ignore-proxy @name [--once]
+    Temporarily ignore a config file.
+    Without --once: stays active until terminal closes.
+    With --once:    affects only the next query.
+
+    Example:
+      proxydeploy run --ignore-proxy @work
+      > 🌊 Config 'work' ignored.
+
+
+proxydeploy run --ignore-proxy "proxy_url" [--once]
+    Temporarily ignore a specific proxy address.
+    Without --once: stays active until terminal closes.
+    With --once:    affects only the next query.
+
+    Example:
+      proxydeploy run --ignore-proxy "socks5://127.0.0.1:1080"
+      > 🌊 Proxy 'socks5://127.0.0.1:1080' ignored.
+
+
+proxydeploy run --provisional-start
+    Start provisional mode. All temporary settings (enforce/ignore) will remain
+    active until you run --provisional-end or close the terminal.
+
+    Example:
+      proxydeploy run --provisional-start
+      > 🌊 Provisional mode started.
+
+
+proxydeploy run --provisional-end
+    End provisional mode and clear all temporary settings.
+
+    Example:
+      proxydeploy run --provisional-end
+      > 🌊 Provisional mode ended. All temporary settings cleared.
+
+
+4. Environment Variable
 -----------------------
 
 WAVEPROXY_CONFIG
@@ -127,50 +255,32 @@ WAVEPROXY_CONFIG
       export WAVEPROXY_CONFIG=default
 
 
-4. Installation & Uninstallation
+5. Installation & Uninstallation
 --------------------------------
 
 Install:
-    curl -fsSL https://proxy.macwave.org/install.sh | bash
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/install.sh)"
 
 Uninstall:
-    rm -rf ~/.local/waveproxy
+    /bin/bash -c "INSTALL_DIR=\"\$HOME/.local/waveproxy\"; echo -e \"\033[31mYou are deleting WaveProxy, are you sure? [Y/n]\033[0m\"; read -n 1 -r; echo; if [[ ! \$REPLY =~ ^[Yy]\$ ]]; then echo \"🌊 Uninstall cancelled.\"; exit 0; fi; if [ -d \"\$INSTALL_DIR\" ]; then echo \"🌊 Removing \$INSTALL_DIR...\"; rm -rf \"\$INSTALL_DIR\"; else echo \"🌊 WaveProxy installation directory not found. Skipping.\"; fi; for RC_FILE in \"\$HOME/.zshrc\" \"\$HOME/.bashrc\"; do if [ -f \"\$RC_FILE\" ]; then sed -i '' '/# WaveProxy/d' \"\$RC_FILE\" 2>/dev/null || true; sed -i '' '/export PATH=\".*waveproxy\/bin/d' \"\$RC_FILE\" 2>/dev/null || true; echo \"🌊 Removed WaveProxy PATH entries from \$RC_FILE\"; fi; done; echo \"\"; echo \"🌊 WaveProxy has been uninstalled.\"; echo \"🌊 Please restart your terminal to apply changes.\""
 
 
-5. File Structure
+6. File Structure
 -----------------
 
 ~/.local/waveproxy/
 ├── bin/
-│   ├── waveproxy.rb
+│   ├── waveproxy.rb           # Main program (Ruby core)
 │   ├── waveproxy -> waveproxy.rb
-│   ├── proxywrap.sh
+│   ├── proxywrap.sh           # Universal wrapper
 │   ├── proxywrap -> proxywrap.sh
-│   ├── proxydeploy.sh
+│   ├── proxydeploy.sh         # Configuration management tool
 │   └── proxydeploy -> proxydeploy.sh
-├── proxydeploy@default.txt   # Default config
-├── proxydeploy@work.txt      # Work config
-├── proxydeploy@home.txt      # Home config
-└── COMMAND_REFERENCE.txt
-
-
-6. Quick Summary Table
-----------------------
-
-Command                                    Description
------------------------------------------- -----------------------------------------
-waveproxy query <url>                      Query proxy for a URL
-waveproxy commandreference                 Print command reference
-proxywrap <command>                        Auto-inject proxy into any command
-proxydeploy                                Show current default config name
-proxydeploy list                           View default config content
-proxydeploy list @name                     View specified config content
-proxydeploy edit                           Edit default config
-proxydeploy edit @name                     Edit specified config
-proxydeploy run --change-to-default @n @o  Switch default config
-proxydeploy run --print-working-proxy      Print active proxy variable
-proxydeploy run --print-default-proxy      Print default proxy variable
-export WAVEPROXY_CONFIG=name               Switch to specified config
+├── lib/
+│   ├── parser.rb
+│   └── matcher.rb
+├── proxydeploy@default.txt    # Default config file
+└── COMMAND_REFERENCE.txt      # Complete command reference
 
 
 7. Default Configuration Example
