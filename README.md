@@ -43,7 +43,7 @@ Wrapper
 ----------
 ```
 proxywrap <any command>     # Auto-inject proxy into any command
-proxywrap --help-all        # Show help for all three commands```
+proxywrap --help-all        # Show help for all three commands
 ```
 
 Configuration Management
