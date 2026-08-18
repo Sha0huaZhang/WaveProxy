@@ -161,7 +161,9 @@ class ProxyParser
           current_block.alt_fallback = name
 
         elsif stripped.start_with?('default: "')
-          name = stripped.tr('default: "', '"').tr('"', '')
+          # ========== 修复：使用 sub 安全提取变量名，避免 tr 误吞字符 ==========
+          name = stripped.sub('default: "', '').tr('"', '')
+          # ====================================================================
           if current_block.fallback
             @errors << "Line #{@line_num}: only one 'default' allowed per proxy block"
           end
