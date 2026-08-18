@@ -17,6 +17,11 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo "  \033[32mrun --print-working-proxy\033[0m  Print the currently active proxy variable"
     echo "  \033[32mrun --print-default-proxy\033[0m   Print the default proxy variable from the config"
     echo
+    echo "  \033[32mrun --print-detailed-working-proxy\033[0m  Print detailed content of the current config"
+    echo "  \033[32mrun --print-detailed-default-proxy\033[0m  Print detailed content of the default config"
+    echo "  \033[32mrun --print-detailed-all-proxy\033[0m      Print detailed content of ALL configs"
+    echo "  \033[32mrun --print-all-proxy\033[0m               List all available config files"
+    echo
     echo -e "\033[35mFlags:\033[0m"
     echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
     echo
@@ -45,6 +50,18 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo "  # Print default proxy from config"
     echo "  \033[32mproxydeploy run --print-default-proxy\033[0m"
     echo ""
+    echo "  # Print detailed content of current config"
+    echo "  \033[32mproxydeploy run --print-detailed-working-proxy\033[0m"
+    echo ""
+    echo "  # Print detailed content of default config"
+    echo "  \033[32mproxydeploy run --print-detailed-default-proxy\033[0m"
+    echo ""
+    echo "  # Print detailed content of ALL configs"
+    echo "  \033[32mproxydeploy run --print-detailed-all-proxy\033[0m"
+    echo ""
+    echo "  # List all available config files"
+    echo "  \033[32mproxydeploy run --print-all-proxy\033[0m"
+    echo ""
     echo "For more details, visit: https://proxy.macwave.org"
     exit 0
 fi
@@ -55,15 +72,76 @@ DEFAULT_NAME="default"
 # 获取当前默认配置名（从环境变量或默认）
 CURRENT_NAME="${WAVEPROXY_CONFIG:-$DEFAULT_NAME}"
 
-# 解析命令
+# ========================================
+# 辅助函数
+# ========================================
+
+# 获取所有配置文件名列表（不带 @ 后缀）
+get_all_configs() {
+    find "$CONFIG_DIR" -maxdepth 1 -name "proxydeploy@*.txt" | \
+        sed -n 's/.*proxydeploy@\(.*\)\.txt/\1/p' | sort
+}
+
+# 获取当前正在工作的配置名（通过环境变量或 .default_config）
+get_working_config_name() {
+    if [ -n "$WAVEPROXY_CONFIG" ]; then
+        echo "$WAVEPROXY_CONFIG"
+    elif [ -f "$CONFIG_DIR/.default_config" ]; then
+        sed -n 's/export WAVEPROXY_CONFIG=\(.*\)/\1/p' "$CONFIG_DIR/.default_config" | head -n1
+    else
+        echo "$DEFAULT_NAME"
+    fi
+}
+
+# 打印详细配置内容，并在末尾右对齐加上标记
+print_detailed_config() {
+    local config_name="$1"
+    local config_file="$CONFIG_DIR/proxydeploy@${config_name}.txt"
+
+    if [ ! -f "$config_file" ]; then
+        echo "🌊 Config '${config_name}' not found."
+        return 1
+    fi
+
+    echo "==== $config_name ===="
+    cat "$config_file"
+
+    # 确定末尾标记
+    local working_name
+    working_name=$(get_working_config_name)
+
+    local marker=""
+    if [ "$config_name" = "$DEFAULT_NAME" ]; then
+        marker="----default"
+    elif [ "$config_name" = "$working_name" ]; then
+        marker="----working"
+    fi
+
+    if [ -n "$marker" ]; then
+        # 右对齐打印绿色标记
+        local term_width
+        term_width=$(tput cols 2>/dev/null || echo 80)
+        local marker_len=${#marker}
+        local padding=$((term_width - marker_len))
+        if [ $padding -lt 1 ]; then
+            padding=1
+        fi
+        printf "\033[32m%${padding}s\033[0m\n" "$marker"
+    fi
+}
+
+# ========================================
+# 命令解析
+# ========================================
+
 CMD="${1:-status}"
 shift 2>/dev/null || true
 
 case "$CMD" in
     status|"")
-        echo "🌊 $CURRENT_NAME"
+        echo "$CURRENT_NAME"
         ;;
-    
+
     list)
         TARGET="${1:-@$CURRENT_NAME}"
         TARGET="${TARGET#@}"
@@ -75,7 +153,7 @@ case "$CMD" in
             exit 1
         fi
         ;;
-    
+
     edit)
         TARGET="${1:-@$CURRENT_NAME}"
         TARGET="${TARGET#@}"
@@ -86,33 +164,35 @@ case "$CMD" in
         fi
         nano "$CONFIG_FILE"
         ;;
-    
+
     run)
+        # --- 切换默认配置 ---
         if [ "$1" = "--change-to-default" ]; then
             NEW_NAME="${2#@}"
             OLD_NAME="${3#@}"
-            
+
             NEW_FILE="$CONFIG_DIR/proxydeploy@${NEW_NAME}.txt"
             if [ ! -f "$NEW_FILE" ]; then
                 echo "🌊 Error: Config not found: proxydeploy@${NEW_NAME}.txt"
                 exit 1
             fi
-            
+
             OLD_FILE="$CONFIG_DIR/proxydeploy@${OLD_NAME}.txt"
             if [ ! -f "$OLD_FILE" ]; then
                 echo "🌊 Warning: Old config not found: proxydeploy@${OLD_NAME}.txt"
             fi
-            
+
             echo "🌊 Switching default config from $OLD_NAME to $NEW_NAME"
             cp "$NEW_FILE" "$CONFIG_DIR/proxydeploy@default.txt"
-            
+
             echo "🌊 export WAVEPROXY_CONFIG=$NEW_NAME" > "$CONFIG_DIR/.default_config"
-            
+
             echo "🌊 Default config updated to: $NEW_NAME"
             echo "🌊 WaveProxy will use $NEW_NAME on next query."
             exit 0
         fi
 
+        # --- 打印当前工作代理变量 ---
         if [ "$1" = "--print-working-proxy" ]; then
             CONFIG_FILE="$CONFIG_DIR/proxydeploy@${CURRENT_NAME}.txt"
             if [ ! -f "$CONFIG_FILE" ]; then
@@ -128,6 +208,7 @@ case "$CMD" in
             exit 0
         fi
 
+        # --- 打印默认代理变量 ---
         if [ "$1" = "--print-default-proxy" ]; then
             DEFAULT_CONFIG="$CONFIG_DIR/proxydeploy@default.txt"
             if [ ! -f "$DEFAULT_CONFIG" ]; then
@@ -143,10 +224,48 @@ case "$CMD" in
             exit 0
         fi
 
-        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy"
+        # --- 打印详细当前工作配置 ---
+        if [ "$1" = "--print-detailed-working-proxy" ]; then
+            print_detailed_config "$(get_working_config_name)"
+            exit 0
+        fi
+
+        # --- 打印详细默认配置 ---
+        if [ "$1" = "--print-detailed-default-proxy" ]; then
+            print_detailed_config "$DEFAULT_NAME"
+            exit 0
+        fi
+
+        # --- 打印详细所有配置 ---
+        if [ "$1" = "--print-detailed-all-proxy" ]; then
+            all_configs=$(get_all_configs)
+            if [ -z "$all_configs" ]; then
+                echo "🌊 No config files found."
+                exit 0
+            fi
+            for name in $all_configs; do
+                echo ""
+                print_detailed_config "$name"
+                echo ""
+            done
+            exit 0
+        fi
+
+        # --- 列出所有配置名 ---
+        if [ "$1" = "--print-all-proxy" ]; then
+            all_configs=$(get_all_configs)
+            if [ -z "$all_configs" ]; then
+                echo "🌊 No config files found."
+            else
+                echo "$all_configs"
+            fi
+            exit 0
+        fi
+
+        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy | --print-detailed-working-proxy | --print-detailed-default-proxy | --print-detailed-all-proxy | --print-all-proxy"
         exit 1
         ;;
-    
+
     *)
         echo "🌊 Unknown command: $CMD"
         echo "🌊 Available commands: status, list, edit, run"
