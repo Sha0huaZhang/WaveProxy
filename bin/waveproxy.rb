@@ -39,19 +39,36 @@ end
 
 def print_help
   puts "\033[35musage: \033[38;5;197mwaveproxy <command> [url] [flags]\033[0m"
+  puts
   puts "WaveProxy #{VERSION} 🌊"
   puts "A lightweight, script-friendly command-line proxy decision tool."
+  puts
   puts "\033[35mCommands:\033[0m"
   puts "  \033[32mquery <url>\033[0m          Query the proxy for a given URL"
   puts "                          Output: \"proxy\" or None"
   puts "  \033[32mcommandreference\033[0m     Print the complete command reference"
+  puts
   puts "\033[35mFlags:\033[0m"
   puts "  \033[32m-h, --help\033[0m          Show this help message and exit"
   puts "  \033[32m-V, --version\033[0m       Show program's version number and exit"
   puts "  \033[32m-s, --silent\033[0m        Suppress all non-output messages (for scripting)"
   puts "  \033[32m-v, --verbose\033[0m       Enable detailed debug output (stderr)"
   puts "  \033[32m-f, --fail\033[0m           Exit with non-zero code on error (like curl -f)"
+  puts
   puts "For more details, visit: https://proxy.macwave.org"
+end
+
+def print_help_all
+  puts "\033[35m==== waveproxy (proxy decision engine) ====\033[0m"
+  print_help
+  puts "\033[35m==========================================\033[0m"
+  puts
+  puts "\033[35m==== proxydeploy (configuration management) ====\033[0m"
+  system('proxydeploy -h 2>/dev/null') || puts("🌊 proxydeploy command not found.")
+  puts "\033[35m================================================\033[0m"
+  puts
+  puts "\033[35m==== proxywrap (auto-inject wrapper) ====\033[0m"
+  system('proxywrap -h 2>/dev/null') || puts("🌊 proxywrap command not found.")
 end
 
 def main
@@ -68,6 +85,18 @@ def main
   if ARGV.include?('-h') || ARGV.include?('--help')
     print_help
     exit 0
+  end
+
+  if ARGV.include?('--help-all')
+    print_help_all
+    exit 0
+  end
+
+  # 检查 --once 参数（作用于本次查询本身）
+  if ARGV.include?('--once')
+    ARGV.delete('--once')
+    # 标记本次查询为单次模式，供后续逻辑使用
+    # 实际单次行为由环境变量或内部逻辑控制
   end
 
   fail_on_error = false
@@ -125,7 +154,64 @@ def main
 
   puts "🌊 [verbose] Querying URL: #{url}" if verbose
 
+  # --- 处理单次强制/忽略（通过环境变量） ---
+  once_enforce_config = ENV['WAVEPROXY_ONCE_ENFORCE_CONFIG']
+  once_enforce_proxy = ENV['WAVEPROXY_ONCE_ENFORCE_PROXY']
+  once_ignore_config = ENV['WAVEPROXY_ONCE_IGNORE_CONFIG']
+  once_ignore_proxy = ENV['WAVEPROXY_ONCE_IGNORE_PROXY']
+
+  # --- 处理长期强制/忽略（会话级） ---
+  enforce_config = ENV['WAVEPROXY_ENFORCE_CONFIG']
+  enforce_proxy = ENV['WAVEPROXY_ENFORCE_PROXY']
+  ignore_config = ENV['WAVEPROXY_IGNORE_CONFIG']
+  ignore_proxy = ENV['WAVEPROXY_IGNORE_PROXY']
+
+  # 如果有单次强制配置，覆盖 config_name 并清空变量
+  if once_enforce_config
+    config_name = once_enforce_config
+    ENV['WAVEPROXY_ONCE_ENFORCE_CONFIG'] = nil
+    puts "🌊 [verbose] Once-enforced config: #{config_name}" if verbose
+  elsif once_enforce_proxy
+    proxy = once_enforce_proxy
+    ENV['WAVEPROXY_ONCE_ENFORCE_PROXY'] = nil
+    puts "🌊 [verbose] Once-enforced proxy: #{proxy}" if verbose
+    puts "\"#{proxy}\""
+    exit 0
+  elsif once_ignore_config
+    ignore_config_name = once_ignore_config
+    ENV['WAVEPROXY_ONCE_IGNORE_CONFIG'] = nil
+    puts "🌊 [verbose] Once-ignored config: #{ignore_config_name}" if verbose
+    puts "None"
+    exit 0
+  elsif once_ignore_proxy
+    ignore_proxy_addr = once_ignore_proxy
+    ENV['WAVEPROXY_ONCE_IGNORE_PROXY'] = nil
+    puts "🌊 [verbose] Once-ignored proxy: #{ignore_proxy_addr}" if verbose
+    # 由后续匹配逻辑处理
+  end
+
+  # 如果有会话级强制代理，直接返回
+  if enforce_proxy
+    puts "🌊 [verbose] Proxy enforced via ENV: #{enforce_proxy}" if verbose
+    puts "\"#{enforce_proxy}\""
+    exit 0
+  end
+
+  # 如果有会话级强制配置，覆盖 config_name
+  if enforce_config
+    config_name = enforce_config
+    puts "🌊 [verbose] Config enforced via ENV: #{config_name}" if verbose
+  end
+
+  # 加载配置
   variables, blocks, errors = load_config(verbose)
+
+  # 如果有会话级忽略配置且与当前 config_name 一致，直连
+  if ignore_config && config_name == ignore_config
+    puts "🌊 [verbose] Config ignored via ENV: #{ignore_config}" if verbose
+    puts "None"
+    exit 0
+  end
 
   unless errors.empty?
     errors.each { |err| $stderr.puts err }
@@ -141,6 +227,20 @@ def main
 
   matcher = Matcher.new
   result = matcher.resolve(url, variables, blocks, verbose)
+
+  # 如果匹配结果等于会话级忽略代理，则返回 None
+  if ignore_proxy && result == ignore_proxy
+    puts "🌊 [verbose] Proxy ignored via ENV: #{ignore_proxy}" if verbose
+    puts "None"
+    exit 0
+  end
+
+  # 如果匹配结果等于单次忽略代理，则返回 None
+  if once_ignore_proxy && result == once_ignore_proxy
+    puts "🌊 [verbose] Once-ignored proxy matched: #{once_ignore_proxy}" if verbose
+    puts "None"
+    exit 0
+  end
 
   if result.nil?
     puts "🌊 None"
