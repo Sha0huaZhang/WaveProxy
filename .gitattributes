@@ -1,5 +1,20 @@
+# 强制 GitHub 将本项目的语言标签显示为 Ruby
+* linguist-language=Ruby
+
+# Ruby 源文件
 *.rb linguist-language=Ruby
+
+# Shell 脚本保持正常统计（不隐藏，按实际比例显示）
 *.sh linguist-language=Shell
-install.sh linguist-language=Shell
-proxywrap.sh linguist-language=Shell
-proxydeploy.sh linguist-language=Shell
+
+# 配置文件保持正常统计
+*.txt linguist-language=Text
+
+# Markdown 文档归为文档
+*.md linguist-documentation
+
+# 忽略临时文件和编辑器备份
+*.swp linguist-generated
+*.swo linguist-generated
+*~ linguist-generated
+.DS_Store linguist-generated
