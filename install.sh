@@ -1,5 +1,5 @@
 #!/bin/bash
-# WaveProxy v1.0 官方安装脚本 (GitHub 版本)
+# WaveProxy v1.0 官方安装脚本
 # 安装路径：~/.local/waveproxy/
 
 set -e
@@ -10,81 +10,70 @@ RED='\033[0;31m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-echo "🌊 Installing WaveProxy v1.0 from GitHub..."
+echo "🌊 Installing WaveProxy v1.0..."
 
-# ========== GitHub 原始文件 URL ==========
-GITHUB_RAW="https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main"
-
-# ========== 1. 创建目录 ==========
+# 1. 创建目录（主程序和核心库分离）
 mkdir -p ~/.local/waveproxy/bin
+mkdir -p ~/.local/waveproxy/lib
 
-# ========== 2. 下载主程序 waveproxy.rb ==========
+# 2. 下载主程序
 echo "🌊 Downloading waveproxy.rb..."
-curl -L "$GITHUB_RAW/bin/waveproxy.rb" -o ~/.local/waveproxy/bin/waveproxy.rb
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/waveproxy.rb -o ~/.local/waveproxy/bin/waveproxy.rb
 chmod +x ~/.local/waveproxy/bin/waveproxy.rb
 echo -e "${GREEN}🌊 waveproxy.rb downloaded successfully${NC}"
 
-# ========== 3. 下载 proxywrap.sh ==========
+# 3. 下载 proxywrap.sh
 echo "🌊 Downloading proxywrap.sh..."
-curl -L "$GITHUB_RAW/bin/proxywrap.sh" -o ~/.local/waveproxy/bin/proxywrap.sh
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxywrap.sh -o ~/.local/waveproxy/bin/proxywrap.sh
 chmod +x ~/.local/waveproxy/bin/proxywrap.sh
 echo -e "${GREEN}🌊 proxywrap.sh downloaded successfully${NC}"
 
-# ========== 4. 下载 proxydeploy.sh ==========
+# 4. 下载 proxydeploy.sh
 echo "🌊 Downloading proxydeploy.sh..."
-curl -L "$GITHUB_RAW/bin/proxydeploy.sh" -o ~/.local/waveproxy/bin/proxydeploy.sh
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
 chmod +x ~/.local/waveproxy/bin/proxydeploy.sh
 echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 
-# ========== 5. 创建软链接（遵循指定目录结构） ==========
-echo "🌊 Creating symbolic links..."
-
-# waveproxy -> waveproxy.rb
-ln -sf ~/.local/waveproxy/bin/waveproxy.rb ~/.local/waveproxy/bin/waveproxy
-echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.rb${NC}"
-
-# proxywrap -> proxywrap.sh
-ln -sf ~/.local/waveproxy/bin/proxywrap.sh ~/.local/waveproxy/bin/proxywrap
-echo -e "${GREEN}🌊 Created symlink: proxywrap -> proxywrap.sh${NC}"
-
-# proxydeploy -> proxydeploy.sh
+# ========== 创建软链接 ==========
 ln -sf ~/.local/waveproxy/bin/proxydeploy.sh ~/.local/waveproxy/bin/proxydeploy
 echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
 
-# ========== 6. 下载默认配置文件 ==========
+ln -sf ~/.local/waveproxy/bin/waveproxy.rb ~/.local/waveproxy/bin/waveproxy
+echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.rb${NC}"
+
+ln -sf ~/.local/waveproxy/bin/proxywrap.sh ~/.local/waveproxy/bin/proxywrap
+echo -e "${GREEN}🌊 Created symlink: proxywrap -> proxywrap.sh${NC}"
+
+# 5. 下载核心库文件（新增步骤）
+echo "🌊 Downloading parser.rb..."
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/lib/parser.rb -o ~/.local/waveproxy/lib/parser.rb
+echo -e "${GREEN}🌊 parser.rb downloaded successfully${NC}"
+
+echo "🌊 Downloading matcher.rb..."
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/lib/matcher.rb -o ~/.local/waveproxy/lib/matcher.rb
+echo -e "${GREEN}🌊 matcher.rb downloaded successfully${NC}"
+
+# 6. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@default.txt ]; then
-    echo "🌊 Downloading default config file..."
-    curl -L "$GITHUB_RAW/proxydeploy@default.txt" -o ~/.local/waveproxy/proxydeploy@default.txt
-    echo -e "${GREEN}🌊 Default config file downloaded successfully${NC}"
+    echo "🌊 Generating default config file..."
+    curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/config/proxydeploy@default.txt -o ~/.local/waveproxy/proxydeploy@default.txt
+    echo -e "${GREEN}🌊 Default config file generated successfully${NC}"
 fi
 
-# ========== 7. 下载命令参考文件 ==========
+# 7. 下载命令参考文件
 echo "🌊 Downloading COMMAND_REFERENCE.txt..."
-curl -L "$GITHUB_RAW/COMMAND_REFERENCE.txt" -o ~/.local/waveproxy/COMMAND_REFERENCE.txt
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/COMMAND_REFERENCE.txt -o ~/.local/waveproxy/COMMAND_REFERENCE.txt
 echo -e "${GREEN}🌊 COMMAND_REFERENCE.txt downloaded successfully${NC}"
 
-# ========== 8. 将 bin 加入 PATH ==========
+# 8. 将 bin 加入 PATH
 if ! echo "$PATH" | grep -q "$HOME/.local/waveproxy/bin"; then
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.bashrc
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.zshrc
     echo -e "${GREEN}🌊 PATH updated. Please restart your shell or run: exec \$SHELL${NC}"
 fi
 
-# ========== 9. 验证安装 ==========
 echo ""
 echo -e "${GREEN}🌊 WaveProxy v1.0 installation complete!${NC}"
-echo ""
-echo -e "${GREEN}🌊 File structure:${NC}"
-echo "  ~/.local/waveproxy/"
-echo "  ├── bin/"
-echo "  │   ├── waveproxy.rb           # Main program (Ruby core)"
-echo "  │   ├── waveproxy -> waveproxy.rb"
-echo "  │   ├── proxywrap.sh           # Universal wrapper"
-echo "  │   ├── proxywrap -> proxywrap.sh"
-echo "  │   ├── proxydeploy.sh         # Configuration management tool"
-echo "  │   └── proxydeploy -> proxydeploy.sh"
-echo "  ├── proxydeploy@default.txt    # Default config file"
-echo "  └── COMMAND_REFERENCE.txt      # Complete command reference"
 echo ""
 echo -e "${GREEN}🌊 Quick start:${NC}"
 echo "  waveproxy query github.com          # Query proxy for a URL"
