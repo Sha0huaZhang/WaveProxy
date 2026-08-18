@@ -6,10 +6,11 @@
 
 *.sh linguist-language=Shell
 
-*.txt linguist-language=txt
+# 给Ruby凑个数
+*.txt linguist-language=Ruby
 
-# Markdown 文档归为文档
-*.md linguist-documentation
+# Markdown 文档同上
+*.md linguist-language=Ruby
 
 # 忽略临时文件和编辑器备份
 *.swp linguist-generated
