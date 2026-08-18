@@ -219,7 +219,8 @@ class ProxyParser
 
       # 解析规则块标签（如 "home":）
       elsif !in_def_proxy && stripped.end_with?(':')
-        label = stripped.rstrip(':').tr('"', '')
+        # 修复：使用 chomp 替代 rstrip，兼容所有 Ruby 版本
+        label = stripped.chomp(':').tr('"', '')
         current_block = ProxyRuleBlock.new(label)
       end
 
