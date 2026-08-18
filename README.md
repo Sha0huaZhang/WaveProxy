@@ -30,18 +30,20 @@ Main Program
 ```
 waveproxy query <url>                      # Query proxy for a URL
 waveproxy commandreference                 # Print the complete command reference
-waveproxy -h / --help                      # Show help information
-waveproxy -V / --version                   # Show version number
-waveproxy -s / --silent                    # Silent mode (output result only)
-waveproxy -v / --verbose                   # Verbose mode (output debug info)
-waveproxy -f / --fail                      # Exit with non-zero code on error
+waveproxy -h, --help                       # Show help information
+waveproxy -V, --version                    # Show version number
+waveproxy -s, --silent                     # Silent mode (output result only)
+waveproxy -v, --verbose                    # Verbose mode (output debug info)
+waveproxy -f, --fail                       # Exit with non-zero code on error
+waveproxy --help-all                       # Show help for all three commands
+waveproxy query <url> --once               # Apply once-only logic to this query
 ```
 
 Wrapper
 ----------
 ```
 proxywrap <any command>                    # Auto-inject proxy into any command
-```
+proxywrap --help-all                       # Show help for all three commands```
 
 
 Configuration Management
@@ -52,10 +54,26 @@ proxydeploy list                           # View default config content
 proxydeploy list @name                     # View specified config content
 proxydeploy edit                           # Edit default config
 proxydeploy edit @name                     # Edit specified config
+
 proxydeploy run --change-to-default @new @old  # Switch default config
 proxydeploy run --print-working-proxy       # Print current working proxy
 proxydeploy run --print-default-proxy       # Print default proxy
-proxydeploy -h / --help                    # Show help information
+
+proxydeploy run --print-detailed-working-proxy  # Print detailed current config
+proxydeploy run --print-detailed-default-proxy  # Print detailed default config
+proxydeploy run --print-detailed-all-proxy      # Print detailed ALL configs
+proxydeploy run --print-all-proxy               # List all configs with markers
+
+proxydeploy run --create-new-proxy @name        # Create and edit a new config
+proxydeploy run --enforce-proxy @name [--once]  # Enforce config (session or once)
+proxydeploy run --enforce-proxy "url" [--once]  # Enforce proxy address (session or once)
+proxydeploy run --ignore-proxy @name [--once]   # Ignore config (session or once)
+proxydeploy run --ignore-proxy "url" [--once]   # Ignore proxy address (session or once)
+proxydeploy run --provisional-start             # Start provisional mode
+proxydeploy run --provisional-end               # End provisional mode
+
+proxydeploy -h, --help                     # Show help information
+proxydeploy --help-all                     # Show help for all three commands
 ```
 
 
