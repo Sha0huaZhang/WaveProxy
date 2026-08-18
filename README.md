@@ -49,15 +49,15 @@ proxywrap --help-all                       # Show help for all three commands```
 Configuration Management
 ---------------------------
 ```
-proxydeploy                                # Show current default config name
-proxydeploy list                           # View default config content
-proxydeploy list @name                     # View specified config content
-proxydeploy edit                           # Edit default config
-proxydeploy edit @name                     # Edit specified config
+proxydeploy                                     # Show current default config name
+proxydeploy list                                # View default config content
+proxydeploy list @name                          # View specified config content
+proxydeploy edit                                # Edit default config
+proxydeploy edit @name                          # Edit specified config
 
-proxydeploy run --change-to-default @new @old  # Switch default config
-proxydeploy run --print-working-proxy       # Print current working proxy
-proxydeploy run --print-default-proxy       # Print default proxy
+proxydeploy run --change-to-default @new @old   # Switch default config
+proxydeploy run --print-working-proxy           # Print current working proxy
+proxydeploy run --print-default-proxy           # Print default proxy
 
 proxydeploy run --print-detailed-working-proxy  # Print detailed current config
 proxydeploy run --print-detailed-default-proxy  # Print detailed default config
@@ -72,8 +72,8 @@ proxydeploy run --ignore-proxy "url" [--once]   # Ignore proxy address (session 
 proxydeploy run --provisional-start             # Start provisional mode
 proxydeploy run --provisional-end               # End provisional mode
 
-proxydeploy -h, --help                     # Show help information
-proxydeploy --help-all                     # Show help for all three commands
+proxydeploy -h, --help                          # Show help information
+proxydeploy --help-all                          # Show help for all three commands
 ```
 
 
