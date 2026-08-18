@@ -22,6 +22,14 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo "  \033[32mrun --print-detailed-all-proxy\033[0m      Print detailed content of ALL configs"
     echo "  \033[32mrun --print-all-proxy\033[0m               List all available config files"
     echo
+    echo "  \033[32mrun --create-new-proxy @name\033[0m        Create and edit a new config file"
+    echo "  \033[32mrun --enforce-proxy @name [--once]\033[0m  Enforce a config (session or once)"
+    echo "  \033[32mrun --enforce-proxy \"url\" [--once]\033[0m  Enforce a proxy address (session or once)"
+    echo "  \033[32mrun --ignore-proxy @name [--once]\033[0m   Ignore a config (session or once)"
+    echo "  \033[32mrun --ignore-proxy \"url\" [--once]\033[0m   Ignore a proxy address (session or once)"
+    echo "  \033[32mrun --provisional-start\033[0m             Start provisional mode"
+    echo "  \033[32mrun --provisional-end\033[0m               End provisional mode"
+    echo
     echo -e "\033[35mFlags:\033[0m"
     echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
     echo
@@ -62,7 +70,44 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     echo "  # List all available config files"
     echo "  \033[32mproxydeploy run --print-all-proxy\033[0m"
     echo ""
+    echo "  # Create and edit a new config"
+    echo "  \033[32mproxydeploy run --create-new-proxy @project\033[0m"
+    echo ""
+    echo "  # Enforce a config for current session"
+    echo "  \033[32mproxydeploy run --enforce-proxy @work\033[0m"
+    echo ""
+    echo "  # Enforce a config for the next query only"
+    echo "  \033[32mproxydeploy run --enforce-proxy @work --once\033[0m"
+    echo ""
+    echo "  # Ignore a config for current session"
+    echo "  \033[32mproxydeploy run --ignore-proxy @home\033[0m"
+    echo ""
+    echo "  # Ignore a config for the next query only"
+    echo "  \033[32mproxydeploy run --ignore-proxy @home --once\033[0m"
+    echo ""
+    echo "  # Start provisional mode"
+    echo "  \033[32mproxydeploy run --provisional-start\033[0m"
+    echo ""
+    echo "  # End provisional mode"
+    echo "  \033[32mproxydeploy run --provisional-end\033[0m"
+    echo ""
     echo "For more details, visit: https://proxy.macwave.org"
+    exit 0
+fi
+
+# --- 处理 --help-all ---
+if [[ "$1" == "--help-all" ]]; then
+    echo -e "\033[35m==== proxydeploy (configuration management) ====\033[0m"
+    # 复用 -h 的打印逻辑（直接调用自身 -h）
+    $0 -h
+    echo -e "\033[35m================================================\033[0m"
+    echo
+    echo -e "\033[35m==== waveproxy (proxy decision engine) ====\033[0m"
+    waveproxy -h 2>/dev/null || echo "🌊 waveproxy command not found."
+    echo -e "\033[35m==========================================\033[0m"
+    echo
+    echo -e "\033[35m==== proxywrap (auto-inject wrapper) ====\033[0m"
+    proxywrap -h 2>/dev/null || echo "🌊 proxywrap command not found."
     exit 0
 fi
 
@@ -297,7 +342,146 @@ case "$CMD" in
             exit 0
         fi
 
-        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy | --print-detailed-working-proxy | --print-detailed-default-proxy | --print-detailed-all-proxy | --print-all-proxy"
+        # --- 创建并编辑新配置（若已存在则报错） ---
+        if [ "$1" = "--create-new-proxy" ]; then
+            NEW_NAME="${2#@}"
+            if [ -z "$NEW_NAME" ]; then
+                echo "🌊 Usage: proxydeploy run --create-new-proxy @name"
+                exit 1
+            fi
+
+            NEW_FILE="$CONFIG_DIR/proxydeploy@${NEW_NAME}.txt"
+            if [ -f "$NEW_FILE" ]; then
+                echo -e "\033[31m🌊 Error: Config '${NEW_NAME}' already exists. Use 'proxydeploy edit @${NEW_NAME}' to edit it.\033[0m"
+                exit 1
+            else
+                echo "🌊 Creating new config: proxydeploy@${NEW_NAME}.txt"
+                touch "$NEW_FILE"
+                nano "$NEW_FILE"
+            fi
+            exit 0
+        fi
+
+        # --- 强制配置（环境变量版） ---
+        if [ "$1" = "--enforce-proxy" ]; then
+            TARGET="$2"
+            if [ -z "$TARGET" ]; then
+                echo "🌊 Usage: proxydeploy run --enforce-proxy @config_name | \"proxy_url\" [--once]"
+                exit 1
+            fi
+
+            # 检查是否带了 --once
+            ONCE_FLAG=""
+            if [[ "$3" == "--once" ]]; then
+                ONCE_FLAG="ONCE"
+            fi
+
+            if [[ "$TARGET" == @* ]]; then
+                CONFIG_NAME="${TARGET#@}"
+                if [ "$ONCE_FLAG" = "ONCE" ]; then
+                    export WAVEPROXY_ONCE_ENFORCE_CONFIG="$CONFIG_NAME"
+                    echo "🌊 Config '${CONFIG_NAME}' enforced for the next query only (--once)."
+                else
+                    export WAVEPROXY_ENFORCE_CONFIG="$CONFIG_NAME"
+                    echo "🌊 Config '${CONFIG_NAME}' enforced for current session."
+                fi
+            else
+                if [ "$ONCE_FLAG" = "ONCE" ]; then
+                    export WAVEPROXY_ONCE_ENFORCE_PROXY="$TARGET"
+                    echo "🌊 Proxy '$TARGET' enforced for the next query only (--once)."
+                else
+                    export WAVEPROXY_ENFORCE_PROXY="$TARGET"
+                    echo "🌊 Proxy '$TARGET' enforced for current session."
+                fi
+            fi
+            exit 0
+        fi
+
+        # --- 忽略配置（环境变量版） ---
+        if [ "$1" = "--ignore-proxy" ]; then
+            TARGET="$2"
+            if [ -z "$TARGET" ]; then
+                echo "🌊 Usage: proxydeploy run --ignore-proxy @config_name | \"proxy_url\" [--once]"
+                exit 1
+            fi
+
+            # 检查是否带了 --once
+            ONCE_FLAG=""
+            if [[ "$3" == "--once" ]]; then
+                ONCE_FLAG="ONCE"
+            fi
+
+            if [[ "$TARGET" == @* ]]; then
+                CONFIG_NAME="${TARGET#@}"
+                if [ "$ONCE_FLAG" = "ONCE" ]; then
+                    export WAVEPROXY_ONCE_IGNORE_CONFIG="$CONFIG_NAME"
+                    echo "🌊 Config '${CONFIG_NAME}' ignored for the next query only (--once)."
+                else
+                    export WAVEPROXY_IGNORE_CONFIG="$CONFIG_NAME"
+                    echo "🌊 Config '${CONFIG_NAME}' ignored for current session."
+                fi
+            else
+                if [ "$ONCE_FLAG" = "ONCE" ]; then
+                    export WAVEPROXY_ONCE_IGNORE_PROXY="$TARGET"
+                    echo "🌊 Proxy '$TARGET' ignored for the next query only (--once)."
+                else
+                    export WAVEPROXY_IGNORE_PROXY="$TARGET"
+                    echo "🌊 Proxy '$TARGET' ignored for current session."
+                fi
+            fi
+            exit 0
+        fi
+
+        # --- 开启临时模式（带确认机制） ---
+        if [ "$1" = "--provisional-start" ]; then
+            # 检查是否存在正在进行的 provisional 环境变量
+            if [ -n "$WAVEPROXY_ENFORCE_CONFIG" ] || \
+               [ -n "$WAVEPROXY_ENFORCE_PROXY" ] || \
+               [ -n "$WAVEPROXY_IGNORE_CONFIG" ] || \
+               [ -n "$WAVEPROXY_IGNORE_PROXY" ] || \
+               [ -n "$WAVEPROXY_ONCE_ENFORCE_CONFIG" ] || \
+               [ -n "$WAVEPROXY_ONCE_ENFORCE_PROXY" ] || \
+               [ -n "$WAVEPROXY_ONCE_IGNORE_CONFIG" ] || \
+               [ -n "$WAVEPROXY_ONCE_IGNORE_PROXY" ]; then
+                echo -e "\033[31m🌊 There is already an ongoing provisional session.\033[0m"
+                echo -e "\033[31m🌊 Continuing will clear all current provisional settings.\033[0m"
+                echo -n "🌊 Are you sure you want to continue? [Y/n] "
+                read -n 1 -r REPLY
+                echo
+                if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+                    echo "🌊 Provisional start cancelled."
+                    exit 0
+                fi
+                # 用户确认，清空所有现有的 provisional 环境变量
+                unset WAVEPROXY_ENFORCE_CONFIG
+                unset WAVEPROXY_ENFORCE_PROXY
+                unset WAVEPROXY_IGNORE_CONFIG
+                unset WAVEPROXY_IGNORE_PROXY
+                unset WAVEPROXY_ONCE_ENFORCE_CONFIG
+                unset WAVEPROXY_ONCE_ENFORCE_PROXY
+                unset WAVEPROXY_ONCE_IGNORE_CONFIG
+                unset WAVEPROXY_ONCE_IGNORE_PROXY
+                echo "🌊 Existing provisional settings cleared."
+            fi
+            echo "🌊 Provisional mode started. All temporary settings will remain until --provisional-end or terminal close."
+            exit 0
+        fi
+
+        # --- 结束临时模式 ---
+        if [ "$1" = "--provisional-end" ]; then
+            unset WAVEPROXY_ENFORCE_CONFIG
+            unset WAVEPROXY_ENFORCE_PROXY
+            unset WAVEPROXY_IGNORE_CONFIG
+            unset WAVEPROXY_IGNORE_PROXY
+            unset WAVEPROXY_ONCE_ENFORCE_CONFIG
+            unset WAVEPROXY_ONCE_ENFORCE_PROXY
+            unset WAVEPROXY_ONCE_IGNORE_CONFIG
+            unset WAVEPROXY_ONCE_IGNORE_PROXY
+            echo "🌊 Provisional mode ended. All temporary settings cleared."
+            exit 0
+        fi
+
+        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy | --print-detailed-working-proxy | --print-detailed-default-proxy | --print-detailed-all-proxy | --print-all-proxy | --create-new-proxy @name | --enforce-proxy @name/url [--once] | --ignore-proxy @name/url [--once] | --provisional-start | --provisional-end"
         exit 1
         ;;
 
