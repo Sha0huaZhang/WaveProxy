@@ -93,7 +93,7 @@ get_working_config_name() {
     fi
 }
 
-# 打印详细配置内容，并在末尾右对齐加上标记
+# 打印详细配置内容，并在末尾右对齐加上标记（仅当前配置为绿色）
 print_detailed_config() {
     local config_name="$1"
     local config_file="$CONFIG_DIR/proxydeploy@${config_name}.txt"
@@ -106,7 +106,6 @@ print_detailed_config() {
     echo "==== $config_name ===="
     cat "$config_file"
 
-    # 确定末尾标记
     local working_name
     working_name=$(get_working_config_name)
 
@@ -118,7 +117,7 @@ print_detailed_config() {
     fi
 
     if [ -n "$marker" ]; then
-        # 右对齐打印绿色标记
+        # 获取终端宽度
         local term_width
         term_width=$(tput cols 2>/dev/null || echo 80)
         local marker_len=${#marker}
@@ -126,7 +125,13 @@ print_detailed_config() {
         if [ $padding -lt 1 ]; then
             padding=1
         fi
-        printf "\033[32m%${padding}s\033[0m\n" "$marker"
+
+        # 如果当前配置就是 working，用绿色；否则用黑色（无颜色）
+        if [ "$config_name" = "$working_name" ]; then
+            printf "\033[32m%${padding}s\033[0m\n" "$marker"
+        else
+            printf "%${padding}s\n" "$marker"
+        fi
     fi
 }
 
@@ -251,14 +256,44 @@ case "$CMD" in
             exit 0
         fi
 
-        # --- 列出所有配置名 ---
+        # --- 列出所有配置名（左右对齐 + 右对齐标记） ---
         if [ "$1" = "--print-all-proxy" ]; then
             all_configs=$(get_all_configs)
             if [ -z "$all_configs" ]; then
                 echo "🌊 No config files found."
-            else
-                echo "$all_configs"
+                exit 0
             fi
+
+            working_name=$(get_working_config_name)
+            term_width=$(tput cols 2>/dev/null || echo 80)
+
+            for name in $all_configs; do
+                # 构建右侧标记
+                marker=""
+                if [ "$name" = "$DEFAULT_NAME" ]; then
+                    marker="----default"
+                elif [ "$name" = "$working_name" ]; then
+                    marker="----working"
+                fi
+
+                # 计算填充长度，减去右侧标记长度再留 2 个空格缓冲
+                if [ -n "$marker" ]; then
+                    marker_len=${#marker}
+                    padding=$((term_width - marker_len - 2))
+                    if [ $padding -lt 1 ]; then
+                        padding=1
+                    fi
+                    # 配置名 + 填充 + 标记（带颜色）
+                    if [ "$name" = "$working_name" ]; then
+                        printf "%s%${padding}s\033[32m%s\033[0m\n" "$name" "" "$marker"
+                    else
+                        printf "%s%${padding}s%s\n" "$name" "" "$marker"
+                    fi
+                else
+                    # 无标记直接输出配置名
+                    echo "$name"
+                fi
+            done
             exit 0
         fi
 
