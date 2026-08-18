@@ -2,6 +2,8 @@
 
 WaveProxy is **a lightweight embedded command-line proxy configuration tool** written by **Ruby and Shell**, which aimed at resolving **the inconvenience of quickly switching proxies and configuring proxies in batches**.Previously (especially with **GUI tools**), switching proxies and configuring them in batches was a hassle—but now, all you need is **a terminal**.
 
+# Official Website 
+[www.proxy.macwave.org](https://proxy.macwave.org)
 # 🌊Install WaveProxy
 In the terminal, run the following command:
 ```
