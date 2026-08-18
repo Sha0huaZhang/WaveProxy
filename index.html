@@ -494,13 +494,16 @@ Complete example config:
         <h3 style="margin-top: 25px; margin-bottom: 10px;">Local File Structure</h3>
         <div class="code-container">
             <pre>├── bin/
-│   ├── waveproxy.rb           # Main program (Ruby core)
+│   ├── waveproxy.rb           # Main program (Ruby entry point, orchestrates logic)
 │   ├── waveproxy -> waveproxy.rb
-│   ├── proxywrap.sh           # Universal wrapper
+│   ├── proxywrap.sh           # Universal wrapper (auto-injects proxy into commands)
 │   ├── proxywrap -> proxywrap.sh
-│   ├── proxydeploy.sh         # Configuration management tool
+│   ├── proxydeploy.sh         # Configuration management tool (view, edit, switch configs)
 │   └── proxydeploy -> proxydeploy.sh
-├── proxydeploy@default.txt    # Default config file
+├── lib/
+│   ├── parser.rb              # Config file parser (parses proxydeploy@*.txt)
+│   └── matcher.rb             # URL matching engine (handles wildcards and priority logic)
+├── proxydeploy@default.txt    # Default configuration file
 └── COMMAND_REFERENCE.txt      # Complete command reference</pre>
         </div>
         <!-- ================== End Commands for WaveProxy Section ================== -->
