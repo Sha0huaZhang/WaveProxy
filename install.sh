@@ -1,5 +1,5 @@
 #!/bin/bash
-# WaveProxy v1.0 官方安装脚本
+# WaveProxy v1.0.0-beta.1 官方安装脚本
 # 安装路径：~/.local/waveproxy/
 
 set -e
@@ -10,78 +10,86 @@ RED='\033[0;31m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-echo "🌊 Installing WaveProxy v1.0..."
+echo "🌊 Welcome to WaveProxy!"
+echo "🌊 Installing to ~/.local/waveproxy..."
 
-# 1. 创建目录（主程序和核心库分离）
+# 1. 创建目录
 mkdir -p ~/.local/waveproxy/bin
 mkdir -p ~/.local/waveproxy/lib
 
 # 2. 下载主程序
 echo "🌊 Downloading waveproxy.rb..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/waveproxy.rb -o ~/.local/waveproxy/bin/waveproxy.rb
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/bin/waveproxy.rb -o ~/.local/waveproxy/bin/waveproxy.rb
 chmod +x ~/.local/waveproxy/bin/waveproxy.rb
 echo -e "${GREEN}🌊 waveproxy.rb downloaded successfully${NC}"
 
-# 3. 下载 proxywrap.sh
+# 3. 下载包装器
 echo "🌊 Downloading proxywrap.sh..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxywrap.sh -o ~/.local/waveproxy/bin/proxywrap.sh
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/bin/proxywrap.sh -o ~/.local/waveproxy/bin/proxywrap.sh
 chmod +x ~/.local/waveproxy/bin/proxywrap.sh
 echo -e "${GREEN}🌊 proxywrap.sh downloaded successfully${NC}"
 
-# 4. 下载 proxydeploy.sh
+# 4. 下载配置管理工具
 echo "🌊 Downloading proxydeploy.sh..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/bin/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/bin/proxydeploy.sh -o ~/.local/waveproxy/bin/proxydeploy.sh
 chmod +x ~/.local/waveproxy/bin/proxydeploy.sh
 echo -e "${GREEN}🌊 proxydeploy.sh downloaded successfully${NC}"
 
-# ========== 创建软链接 ==========
+# 5. 创建软链接
 ln -sf ~/.local/waveproxy/bin/proxydeploy.sh ~/.local/waveproxy/bin/proxydeploy
-echo -e "${GREEN}🌊 Created symlink: proxydeploy -> proxydeploy.sh${NC}"
-
 ln -sf ~/.local/waveproxy/bin/waveproxy.rb ~/.local/waveproxy/bin/waveproxy
-echo -e "${GREEN}🌊 Created symlink: waveproxy -> waveproxy.rb${NC}"
-
 ln -sf ~/.local/waveproxy/bin/proxywrap.sh ~/.local/waveproxy/bin/proxywrap
-echo -e "${GREEN}🌊 Created symlink: proxywrap -> proxywrap.sh${NC}"
 
-# 5. 下载核心库文件（新增步骤）
+echo -e "${GREEN}🌊 Symlinks created${NC}"
+
+# 6. 下载核心库
 echo "🌊 Downloading parser.rb..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/lib/parser.rb -o ~/.local/waveproxy/lib/parser.rb
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/lib/parser.rb -o ~/.local/waveproxy/lib/parser.rb
 echo -e "${GREEN}🌊 parser.rb downloaded successfully${NC}"
 
 echo "🌊 Downloading matcher.rb..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/lib/matcher.rb -o ~/.local/waveproxy/lib/matcher.rb
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/lib/matcher.rb -o ~/.local/waveproxy/lib/matcher.rb
 echo -e "${GREEN}🌊 matcher.rb downloaded successfully${NC}"
 
-# 6. 创建默认配置文件
+# 7. 创建默认配置文件
 if [ ! -f ~/.local/waveproxy/proxydeploy@default.txt ]; then
     echo "🌊 Generating default config file..."
-    curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/config/proxydeploy@default.txt -o ~/.local/waveproxy/proxydeploy@default.txt
+    curl -L https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/config/proxydeploy@default.txt -o ~/.local/waveproxy/proxydeploy@default.txt
     echo -e "${GREEN}🌊 Default config file generated successfully${NC}"
 fi
 
-# 7. 下载命令参考文件
+# 8. 下载命令参考
 echo "🌊 Downloading COMMAND_REFERENCE.txt..."
-curl -L https://raw.githubusercontent.com/Sha0huaZhang/waveproxy/main/COMMAND_REFERENCE.txt -o ~/.local/waveproxy/COMMAND_REFERENCE.txt
+curl -L https://raw.githubusercontent.com/Sha0huaZhang/WaveProxy/main/COMMAND_REFERENCE.txt -o ~/.local/waveproxy/COMMAND_REFERENCE.txt
 echo -e "${GREEN}🌊 COMMAND_REFERENCE.txt downloaded successfully${NC}"
 
-# 8. 将 bin 加入 PATH
+# 9. 配置 PATH
 if ! echo "$PATH" | grep -q "$HOME/.local/waveproxy/bin"; then
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.bashrc
     echo 'export PATH="$HOME/.local/waveproxy/bin:$PATH"' >> ~/.zshrc
-    echo -e "${GREEN}🌊 PATH updated. Please restart your shell or run: exec \$SHELL${NC}"
+    echo -e "${GREEN}🌊 PATH updated${NC}"
 fi
 
+# ====== 协议确认机制 ======
 echo ""
-echo -e "${GREEN}🌊 WaveProxy v1.0 installation complete!${NC}"
+echo -e "${YELLOW}Please read the agreement before use (see bottom of https://proxy.macwave.org).${NC}"
+read -p "Have you read and agreed to the agreement? [Y/n] " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo -e "${GREEN}🌊 You have agreed to the agreement. Installation continues.${NC}"
+else
+    echo -e "${RED}🌊 You do not agree to the agreement. Installation stopped.${NC}"
+    exit 1
+fi
+# =========================
+
+echo ""
+echo -e "${GREEN}🌊 WaveProxy v1.0.0-beta.1 installation complete!${NC}"
 echo ""
 echo -e "${GREEN}🌊 Quick start:${NC}"
 echo "  waveproxy query github.com          # Query proxy for a URL"
 echo "  proxywrap curl -LO <url>            # Auto-proxy download"
 echo "  proxydeploy                         # Show current default config name"
-echo "  proxydeploy edit                    # Edit default config"
-echo "  proxydeploy list @work              # View work config"
 echo ""
 echo -e "${GREEN}🌊 Config file: ~/.local/waveproxy/proxydeploy@default.txt${NC}"
-echo -e "${RED}🌊 Uninstall: /bin/bash -c \"INSTALL_DIR=\\\"\\\$HOME/.local/waveproxy\\\"; echo -e \\\"\\\033[31mYou are deleting WaveProxy, are you sure? [Y/n]\\\033[0m\\\"; read -n 1 -r; echo; if [[ ! \\\$REPLY =~ ^[Yy]\\\$ ]]; then echo \\\"🌊 Uninstall cancelled.\\\"; exit 0; fi; if [ -d \\\"\\\$INSTALL_DIR\\\" ]; then echo \\\"🌊 Removing \\\$INSTALL_DIR...\\\"; rm -rf \\\"\\\$INSTALL_DIR\\\"; else echo \\\"🌊 WaveProxy installation directory not found. Skipping.\\\"; fi; for RC_FILE in \\\"\\\$HOME/.zshrc\\\" \\\"\\\$HOME/.bashrc\\\"; do if [ -f \\\"\\\$RC_FILE\\\" ]; then sed -i '' '/# WaveProxy/d' \\\"\\\$RC_FILE\\\" 2>/dev/null || true; sed -i '' '/export PATH=\\\".*waveproxy\\/bin/d' \\\"\\\$RC_FILE\\\" 2>/dev/null || true; echo \\\"🌊 Removed WaveProxy PATH entries from \\\$RC_FILE\\\"; fi; done; echo \\\"\\\"; echo \\\"🌊 WaveProxy has been uninstalled.\\\"; echo \\\"🌊 Please restart your terminal to apply changes.\\\"\"${NC}"
 echo -e "${YELLOW}🌊 Tip: Run 'source ~/.zshrc' or restart your terminal to use waveproxy immediately.${NC}"
