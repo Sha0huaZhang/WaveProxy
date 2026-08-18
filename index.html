@@ -7,7 +7,7 @@
     <style>
         body {
             background-color: #8ec4e9;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -44,13 +44,13 @@
             opacity: 0.9;
             max-width: 800px;
             text-align: left;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
         }
 
         .btn-github {
             display: inline-block;
             background-color: #ffffff;
-            color: #0a1b3f;
+            color: #1a2b4c;
             padding: 14px 32px;
             border-radius: 30px;
             text-decoration: none;
@@ -72,7 +72,7 @@
         }
 
         pre {
-            background-color: #2a6099; /* 改为第二张图的深蓝色 */
+            background-color: #2a6099;
             border-radius: 12px;
             padding: 20px;
             overflow-x: auto;
@@ -162,17 +162,11 @@
 
         .contact-section h2 {
             font-size: 2rem;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 20px;
             display: inline-block;
-        }
-
-        .contact-divider {
-            width: 60px;
-            height: 2px;
-            background-color: #4a90e2;
-            margin: 0 auto 20px auto;
+            /* 去掉了原本的边框，只用统一的 header 下划线效果 */
         }
 
         .contact-items {
@@ -187,17 +181,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             font-size: 1.1rem;
         }
 
         .contact-label {
             font-weight: bold;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
         }
 
         .contact-item a {
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             text-decoration: none;
             transition: opacity 0.2s;
         }
@@ -209,7 +203,7 @@
 
         .contact-hint {
             font-size: 0.85rem;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             opacity: 0.7;
             margin-top: 6px;
         }
@@ -225,7 +219,7 @@
 
         .disclaimer {
             font-size: 0.75rem;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             opacity: 0.7;
             line-height: 0.8;
             word-wrap: break-word;
@@ -235,7 +229,7 @@
             margin-bottom: 4px;
             padding-left: 2em;
             text-indent: -2em;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
         }
 
         .install-note {
@@ -244,36 +238,35 @@
             opacity: 0.9;
             max-width: 800px;
             text-align: left;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             margin-top: 0;
             margin-bottom: 10px;
         }
         .install-note strong {
             font-weight: bold;
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
         }
         .install-note .small-link-text {
             font-size: 0.825rem;
             display: inline-block;
         }
         .install-note a {
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             text-decoration: underline;
         }
         .install-note a:hover {
             opacity: 0.8;
         }
 
-        /* 标题样式 */
         h2 {
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
             font-size: 1.8rem;
             border-bottom: 2px solid #4a90e2;
             padding-bottom: 10px;
         }
         
         h3 {
-            color: #1a2b4c; /* 改为墨蓝色 */
+            color: #1a2b4c;
         }
     </style>
 </head>
@@ -288,10 +281,10 @@
 
     <!-- Latest Version -->
     <p style="color: #4a6a90; font-size: 0.95rem; margin-top: -10px; margin-bottom: 30px;">
-        Latest Official Version : 1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Latest Beta Version : 1.0 RC4v2
+        Latest Official Version : None&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Latest Beta Version : 1.0 Beta1
     </p>
 
-    <a href="https://github.com/Sha0huaZhang/MacWave" class="btn-github">View On GitHub</a>
+    <a href="https://github.com/Sha0huaZhang/WaveProxy" class="btn-github">View On GitHub</a>
     
     <!-- Main Content -->
     <div class="content-section" style="margin: 0 auto; padding: 20px; color: #1a2b4c; text-align: left;">
@@ -522,7 +515,6 @@ Complete example config:
     <!-- Contact Us -->
     <div class="contact-section">
         <h2>Contact Us</h2>
-        <div class="contact-divider"></div>
         <div class="contact-items">
             <div class="contact-item">
                 <span class="contact-label">Twitter</span>
