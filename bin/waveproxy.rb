@@ -59,15 +59,19 @@ def print_help
 end
 
 def print_help_all
-  puts "\033[35m==== waveproxy (proxy decision engine) ====\033[0m"
+  # 蓝色等号居中标题，两边等号数量一致
+  puts "\033[34m============waveproxy (proxy decision engine)============\033[0m"
+  puts
   print_help
-  puts "\033[35m==========================================\033[0m"
   puts
-  puts "\033[35m==== proxydeploy (configuration management) ====\033[0m"
+
+  puts "\033[34m============proxydeploy (configuration management)============\033[0m"
+  puts
   system('proxydeploy -h 2>/dev/null') || puts("🌊 proxydeploy command not found.")
-  puts "\033[35m================================================\033[0m"
   puts
-  puts "\033[35m==== proxywrap (auto-inject wrapper) ====\033[0m"
+
+  puts "\033[34m============proxywrap (auto-inject wrapper)============\033[0m"
+  puts
   system('proxywrap -h 2>/dev/null') || puts("🌊 proxywrap command not found.")
 end
 
