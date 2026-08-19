@@ -37,16 +37,17 @@ fi
 
 # --- 处理 --help-all ---
 if [[ "$1" == "--help-all" ]]; then
-    printf "${MAGENTA}==== proxywrap (auto-inject wrapper) ====${NC}\n"
+    printf "\033[34m============proxywrap (auto-inject wrapper)============\033[0m\n"
+    printf "\n"
     # 复用 -h 的打印逻辑（直接调用自身 -h）
     $0 -h
-    printf "${MAGENTA}========================================${NC}\n"
     printf "\n"
-    printf "${MAGENTA}==== waveproxy (proxy decision engine) ====${NC}\n"
+    printf "\033[34m============waveproxy (proxy decision engine)============\033[0m\n"
+    printf "\n"
     waveproxy -h 2>/dev/null || echo "🌊 waveproxy command not found."
-    printf "${MAGENTA}==========================================${NC}\n"
     printf "\n"
-    printf "${MAGENTA}==== proxydeploy (configuration management) ====${NC}\n"
+    printf "\033[34m============proxydeploy (configuration management)============\033[0m\n"
+    printf "\n"
     proxydeploy -h 2>/dev/null || echo "🌊 proxydeploy command not found."
     exit 0
 fi
