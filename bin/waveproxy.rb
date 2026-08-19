@@ -71,6 +71,7 @@ def print_help_all
   system('proxydeploy -h 2>/dev/null') || puts("🌊 proxydeploy command not found.")
   puts
 
+  puts
   puts "\033[34m============proxywrap (auto-inject wrapper)============\033[0m"
   puts
   system('proxywrap -h 2>/dev/null') || puts("🌊 proxywrap command not found.")
