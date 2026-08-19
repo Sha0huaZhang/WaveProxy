@@ -3,39 +3,50 @@
 # 支持: curl, wget, git, wave, npm, yarn, pnpm, pip, pip3, poetry, 
 #       docker, podman, apt, apt-get, yum, dnf, pacman, zypper, brew, port
 
-# 显示帮助
+# ================== 颜色变量定义 ==================
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+MAGENTA='\033[35m'
+CYAN='\033[36m'
+BOLD='\033[1m'
+NC='\033[0m'  # No Color
+# =================================================
+
+# 显示帮助（用 printf 确保颜色渲染）
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
-    echo -e "\033[35musage: \033[38;5;197mproxywrap <command> [args...]\033[0m"
-    echo
-    echo "proxywrap 1.0.0 🌊"
-    echo "Auto-inject proxy into any command."
-    echo
-    echo -e "\033[35mSupported commands:\033[0m"
-    echo "  \033[32mcurl\033[0m    -> -x \"\$PROXY\""
-    echo "  \033[32mwget\033[0m    -> -e use_proxy=yes -e http_proxy=\"\$PROXY\""
-    echo "  \033[32mgit\033[0m     -> -c http.proxy=\"\$PROXY\""
-    echo "  \033[32mwave\033[0m    -> --proxy \"\$PROXY\""
-    echo "  \033[32mbrew\033[0m, \033[32mport\033[0m, \033[32mnpm\033[0m, \033[32mpip\033[0m, \033[32mdocker\033[0m, ... -> http_proxy env"
-    echo
-    echo -e "\033[35mFlags:\033[0m"
-    echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
-    echo
-    echo "For more details, visit: https://proxy.macwave.org"
+    printf "${MAGENTA}usage: ${BOLD}proxywrap <command> [args...]${NC}\n"
+    printf "\n"
+    printf "proxywrap 1.0.0 🌊\n"
+    printf "Auto-inject proxy into any command.\n"
+    printf "\n"
+    printf "${MAGENTA}Supported commands:${NC}\n"
+    printf "  ${GREEN}curl${NC}    -> -x \"\$PROXY\"\n"
+    printf "  ${GREEN}wget${NC}    -> -e use_proxy=yes -e http_proxy=\"\$PROXY\"\n"
+    printf "  ${GREEN}git${NC}     -> -c http.proxy=\"\$PROXY\"\n"
+    printf "  ${GREEN}wave${NC}    -> --proxy \"\$PROXY\"\n"
+    printf "  ${GREEN}brew${NC}, ${GREEN}port${NC}, ${GREEN}npm${NC}, ${GREEN}pip${NC}, ${GREEN}docker${NC}, ... -> http_proxy env\n"
+    printf "\n"
+    printf "${MAGENTA}Flags:${NC}\n"
+    printf "  ${GREEN}-h, --help${NC}          Show this help message and exit\n"
+    printf "\n"
+    printf "For more details, visit: https://proxy.macwave.org\n"
     exit 0
 fi
 
 # --- 处理 --help-all ---
 if [[ "$1" == "--help-all" ]]; then
-    echo -e "\033[35m==== proxywrap (auto-inject wrapper) ====\033[0m"
+    printf "${MAGENTA}==== proxywrap (auto-inject wrapper) ====${NC}\n"
     # 复用 -h 的打印逻辑（直接调用自身 -h）
     $0 -h
-    echo -e "\033[35m========================================\033[0m"
-    echo
-    echo -e "\033[35m==== waveproxy (proxy decision engine) ====\033[0m"
+    printf "${MAGENTA}========================================${NC}\n"
+    printf "\n"
+    printf "${MAGENTA}==== waveproxy (proxy decision engine) ====${NC}\n"
     waveproxy -h 2>/dev/null || echo "🌊 waveproxy command not found."
-    echo -e "\033[35m==========================================\033[0m"
-    echo
-    echo -e "\033[35m==== proxydeploy (configuration management) ====\033[0m"
+    printf "${MAGENTA}==========================================${NC}\n"
+    printf "\n"
+    printf "${MAGENTA}==== proxydeploy (configuration management) ====${NC}\n"
     proxydeploy -h 2>/dev/null || echo "🌊 proxydeploy command not found."
     exit 0
 fi
