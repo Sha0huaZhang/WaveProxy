@@ -108,16 +108,17 @@ fi
 
 # --- 处理 --help-all ---
 if [[ "$1" == "--help-all" ]]; then
-    printf "${MAGENTA}==== proxydeploy (configuration management) ====${NC}\n"
+    printf "\033[34m============proxydeploy (configuration management)============\033[0m\n"
+    printf "\n"
     # 复用 -h 的打印逻辑（直接调用自身 -h）
     $0 -h
-    printf "${MAGENTA}================================================${NC}\n"
     printf "\n"
-    printf "${MAGENTA}==== waveproxy (proxy decision engine) ====${NC}\n"
+    printf "\033[34m============waveproxy (proxy decision engine)============\033[0m\n"
+    printf "\n"
     waveproxy -h 2>/dev/null || echo "🌊 waveproxy command not found."
-    printf "${MAGENTA}==========================================${NC}\n"
     printf "\n"
-    printf "${MAGENTA}==== proxywrap (auto-inject wrapper) ====${NC}\n"
+    printf "\033[34m============proxywrap (auto-inject wrapper)============\033[0m\n"
+    printf "\n"
     proxywrap -h 2>/dev/null || echo "🌊 proxywrap command not found."
     exit 0
 fi
@@ -423,82 +424,4 @@ case "$CMD" in
             fi
 
             if [[ "$TARGET" == @* ]]; then
-                CONFIG_NAME="${TARGET#@}"
-                if [ "$ONCE_FLAG" = "ONCE" ]; then
-                    export WAVEPROXY_ONCE_IGNORE_CONFIG="$CONFIG_NAME"
-                    echo "🌊 Config '${CONFIG_NAME}' ignored for the next query only (--once)."
-                else
-                    export WAVEPROXY_IGNORE_CONFIG="$CONFIG_NAME"
-                    echo "🌊 Config '${CONFIG_NAME}' ignored for current session."
-                fi
-            else
-                if [ "$ONCE_FLAG" = "ONCE" ]; then
-                    export WAVEPROXY_ONCE_IGNORE_PROXY="$TARGET"
-                    echo "🌊 Proxy '$TARGET' ignored for the next query only (--once)."
-                else
-                    export WAVEPROXY_IGNORE_PROXY="$TARGET"
-                    echo "🌊 Proxy '$TARGET' ignored for current session."
-                fi
-            fi
-            exit 0
-        fi
-
-        # --- 开启临时模式（带确认机制） ---
-        if [ "$1" = "--provisional-start" ]; then
-            # 检查是否存在正在进行的 provisional 环境变量
-            if [ -n "$WAVEPROXY_ENFORCE_CONFIG" ] || \
-               [ -n "$WAVEPROXY_ENFORCE_PROXY" ] || \
-               [ -n "$WAVEPROXY_IGNORE_CONFIG" ] || \
-               [ -n "$WAVEPROXY_IGNORE_PROXY" ] || \
-               [ -n "$WAVEPROXY_ONCE_ENFORCE_CONFIG" ] || \
-               [ -n "$WAVEPROXY_ONCE_ENFORCE_PROXY" ] || \
-               [ -n "$WAVEPROXY_ONCE_IGNORE_CONFIG" ] || \
-               [ -n "$WAVEPROXY_ONCE_IGNORE_PROXY" ]; then
-                printf "${RED}🌊 There is already an ongoing provisional session.${NC}\n"
-                printf "${RED}🌊 Continuing will clear all current provisional settings.${NC}\n"
-                echo -n "🌊 Are you sure you want to continue? [Y/n] "
-                read -n 1 -r REPLY
-                echo
-                if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
-                    echo "🌊 Provisional start cancelled."
-                    exit 0
-                fi
-                # 用户确认，清空所有现有的 provisional 环境变量
-                unset WAVEPROXY_ENFORCE_CONFIG
-                unset WAVEPROXY_ENFORCE_PROXY
-                unset WAVEPROXY_IGNORE_CONFIG
-                unset WAVEPROXY_IGNORE_PROXY
-                unset WAVEPROXY_ONCE_ENFORCE_CONFIG
-                unset WAVEPROXY_ONCE_ENFORCE_PROXY
-                unset WAVEPROXY_ONCE_IGNORE_CONFIG
-                unset WAVEPROXY_ONCE_IGNORE_PROXY
-                echo "🌊 Existing provisional settings cleared."
-            fi
-            echo "🌊 Provisional mode started. All temporary settings will remain until --provisional-end or terminal close."
-            exit 0
-        fi
-
-        # --- 结束临时模式 ---
-        if [ "$1" = "--provisional-end" ]; then
-            unset WAVEPROXY_ENFORCE_CONFIG
-            unset WAVEPROXY_ENFORCE_PROXY
-            unset WAVEPROXY_IGNORE_CONFIG
-            unset WAVEPROXY_IGNORE_PROXY
-            unset WAVEPROXY_ONCE_ENFORCE_CONFIG
-            unset WAVEPROXY_ONCE_ENFORCE_PROXY
-            unset WAVEPROXY_ONCE_IGNORE_CONFIG
-            unset WAVEPROXY_ONCE_IGNORE_PROXY
-            echo "🌊 Provisional mode ended. All temporary settings cleared."
-            exit 0
-        fi
-
-        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy | --print-detailed-working-proxy | --print-detailed-default-proxy | --print-detailed-all-proxy | --print-all-proxy | --create-new-proxy @name | --enforce-proxy @name/url [--once] | --ignore-proxy @name/url [--once] | --provisional-start | --provisional-end"
-        exit 1
-        ;;
-
-    *)
-        echo "🌊 Unknown command: $CMD"
-        echo "🌊 Available commands: status, list, edit, run"
-        exit 1
-        ;;
-esac
+                CONFIG_NAME="${T
