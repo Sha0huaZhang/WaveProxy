@@ -108,6 +108,7 @@ fi
 
 # --- 处理 --help-all ---
 if [[ "$1" == "--help-all" ]]; then
+    printf "\n"
     printf "\033[34m============proxydeploy (configuration management)============\033[0m\n"
     printf "\n"
     # 复用 -h 的打印逻辑（直接调用自身 -h）
