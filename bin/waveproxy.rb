@@ -60,6 +60,7 @@ end
 
 def print_help_all
   # 蓝色等号居中标题，两边等号数量一致
+  puts
   puts "\033[34m============waveproxy (proxy decision engine)============\033[0m"
   puts
   print_help
