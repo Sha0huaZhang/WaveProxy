@@ -2,111 +2,122 @@
 # proxydeploy.sh - 配置管理工具
 # 用于查看、编辑、切换 WaveProxy 配置文件
 
-# 显示帮助（含示例）
+# ================== 颜色变量定义 ==================
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+MAGENTA='\033[35m'
+CYAN='\033[36m'
+BOLD='\033[1m'
+NC='\033[0m'  # No Color
+# =================================================
+
+# 显示帮助（含示例，使用 printf 确保颜色渲染）
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
-    echo -e "\033[35musage: \033[38;5;197mproxydeploy <subcommand> [@config_name] [flags]\033[0m"
-    echo
-    echo "proxydeploy 1.0.0 🌊"
-    echo "Configuration management tool for WaveProxy."
-    echo
-    echo -e "\033[35mSubcommands:\033[0m"
-    echo "  \033[32mproxydeploy\033[0m               Show current default config name"
-    echo "  \033[32mlist\033[0m [@name]             View config content (default: default)"
-    echo "  \033[32medit\033[0m [@name]             Edit config with nano (default: default)"
-    echo "  \033[32mrun --change-to-default @new @old\033[0m  Switch default config"
-    echo "  \033[32mrun --print-working-proxy\033[0m  Print the currently active proxy variable"
-    echo "  \033[32mrun --print-default-proxy\033[0m   Print the default proxy variable from the config"
-    echo
-    echo "  \033[32mrun --print-detailed-working-proxy\033[0m  Print detailed content of the current config"
-    echo "  \033[32mrun --print-detailed-default-proxy\033[0m  Print detailed content of the default config"
-    echo "  \033[32mrun --print-detailed-all-proxy\033[0m      Print detailed content of ALL configs"
-    echo "  \033[32mrun --print-all-proxy\033[0m               List all available config files"
-    echo
-    echo "  \033[32mrun --create-new-proxy @name\033[0m        Create and edit a new config file"
-    echo "  \033[32mrun --enforce-proxy @name [--once]\033[0m  Enforce a config (session or once)"
-    echo "  \033[32mrun --enforce-proxy \"url\" [--once]\033[0m  Enforce a proxy address (session or once)"
-    echo "  \033[32mrun --ignore-proxy @name [--once]\033[0m   Ignore a config (session or once)"
-    echo "  \033[32mrun --ignore-proxy \"url\" [--once]\033[0m   Ignore a proxy address (session or once)"
-    echo "  \033[32mrun --provisional-start\033[0m             Start provisional mode"
-    echo "  \033[32mrun --provisional-end\033[0m               End provisional mode"
-    echo
-    echo -e "\033[35mFlags:\033[0m"
-    echo "  \033[32m-h, --help\033[0m          Show this help message and exit"
-    echo
-    echo -e "\033[35mExamples:\033[0m"
-    echo "  # View current default config name"
-    echo "  \033[32mproxydeploy\033[0m"
-    echo ""
-    echo "  # View default config content"
-    echo "  \033[32mproxydeploy list\033[0m"
-    echo ""
-    echo "  # View a specific config"
-    echo "  \033[32mproxydeploy list @work\033[0m"
-    echo ""
-    echo "  # Edit default config with nano"
-    echo "  \033[32mproxydeploy edit\033[0m"
-    echo ""
-    echo "  # Edit a specific config"
-    echo "  \033[32mproxydeploy edit @work\033[0m"
-    echo ""
-    echo "  # Switch default config to 'work'"
-    echo "  \033[32mproxydeploy run --change-to-default @work @default\033[0m"
-    echo ""
-    echo "  # Print current working proxy"
-    echo "  \033[32mproxydeploy run --print-working-proxy\033[0m"
-    echo ""
-    echo "  # Print default proxy from config"
-    echo "  \033[32mproxydeploy run --print-default-proxy\033[0m"
-    echo ""
-    echo "  # Print detailed content of current config"
-    echo "  \033[32mproxydeploy run --print-detailed-working-proxy\033[0m"
-    echo ""
-    echo "  # Print detailed content of default config"
-    echo "  \033[32mproxydeploy run --print-detailed-default-proxy\033[0m"
-    echo ""
-    echo "  # Print detailed content of ALL configs"
-    echo "  \033[32mproxydeploy run --print-detailed-all-proxy\033[0m"
-    echo ""
-    echo "  # List all available config files"
-    echo "  \033[32mproxydeploy run --print-all-proxy\033[0m"
-    echo ""
-    echo "  # Create and edit a new config"
-    echo "  \033[32mproxydeploy run --create-new-proxy @project\033[0m"
-    echo ""
-    echo "  # Enforce a config for current session"
-    echo "  \033[32mproxydeploy run --enforce-proxy @work\033[0m"
-    echo ""
-    echo "  # Enforce a config for the next query only"
-    echo "  \033[32mproxydeploy run --enforce-proxy @work --once\033[0m"
-    echo ""
-    echo "  # Ignore a config for current session"
-    echo "  \033[32mproxydeploy run --ignore-proxy @home\033[0m"
-    echo ""
-    echo "  # Ignore a config for the next query only"
-    echo "  \033[32mproxydeploy run --ignore-proxy @home --once\033[0m"
-    echo ""
-    echo "  # Start provisional mode"
-    echo "  \033[32mproxydeploy run --provisional-start\033[0m"
-    echo ""
-    echo "  # End provisional mode"
-    echo "  \033[32mproxydeploy run --provisional-end\033[0m"
-    echo ""
-    echo "For more details, visit: https://proxy.macwave.org"
+    printf "${MAGENTA}usage: ${BOLD}proxydeploy <subcommand> [@config_name] [flags]${NC}\n"
+    printf "\n"
+    printf "proxydeploy 1.0.0 🌊\n"
+    printf "Configuration management tool for WaveProxy.\n"
+    printf "\n"
+    printf "${MAGENTA}Subcommands:${NC}\n"
+    printf "  ${GREEN}proxydeploy${NC}               Show current default config name\n"
+    printf "  ${GREEN}list${NC} [@name]             View config content (default: default)\n"
+    printf "  ${GREEN}edit${NC} [@name]             Edit config with nano (default: default)\n"
+    printf "  ${GREEN}run --change-to-default @new @old${NC}  Switch default config\n"
+    printf "  ${GREEN}run --print-working-proxy${NC}  Print the currently active proxy variable\n"
+    printf "  ${GREEN}run --print-default-proxy${NC}   Print the default proxy variable from the config\n"
+    printf "\n"
+    printf "  ${GREEN}run --print-detailed-working-proxy${NC}  Print detailed content of the current config\n"
+    printf "  ${GREEN}run --print-detailed-default-proxy${NC}  Print detailed content of the default config\n"
+    printf "  ${GREEN}run --print-detailed-all-proxy${NC}      Print detailed content of ALL configs\n"
+    printf "  ${GREEN}run --print-all-proxy${NC}               List all available config files\n"
+    printf "\n"
+    printf "  ${GREEN}run --create-new-proxy @name${NC}        Create and edit a new config file\n"
+    printf "  ${GREEN}run --enforce-proxy @name [--once]${NC}  Enforce a config (session or once)\n"
+    printf "  ${GREEN}run --enforce-proxy \"url\" [--once]${NC}  Enforce a proxy address (session or once)\n"
+    printf "  ${GREEN}run --ignore-proxy @name [--once]${NC}   Ignore a config (session or once)\n"
+    printf "  ${GREEN}run --ignore-proxy \"url\" [--once]${NC}   Ignore a proxy address (session or once)\n"
+    printf "  ${GREEN}run --provisional-start${NC}             Start provisional mode\n"
+    printf "  ${GREEN}run --provisional-end${NC}               End provisional mode\n"
+    printf "\n"
+    printf "${MAGENTA}Flags:${NC}\n"
+    printf "  ${GREEN}-h, --help${NC}          Show this help message and exit\n"
+    printf "\n"
+    printf "${MAGENTA}Examples:${NC}\n"
+    printf "  # View current default config name\n"
+    printf "  ${GREEN}proxydeploy${NC}\n"
+    printf "\n"
+    printf "  # View default config content\n"
+    printf "  ${GREEN}proxydeploy list${NC}\n"
+    printf "\n"
+    printf "  # View a specific config\n"
+    printf "  ${GREEN}proxydeploy list @work${NC}\n"
+    printf "\n"
+    printf "  # Edit default config with nano\n"
+    printf "  ${GREEN}proxydeploy edit${NC}\n"
+    printf "\n"
+    printf "  # Edit a specific config\n"
+    printf "  ${GREEN}proxydeploy edit @work${NC}\n"
+    printf "\n"
+    printf "  # Switch default config to 'work'\n"
+    printf "  ${GREEN}proxydeploy run --change-to-default @work @default${NC}\n"
+    printf "\n"
+    printf "  # Print current working proxy\n"
+    printf "  ${GREEN}proxydeploy run --print-working-proxy${NC}\n"
+    printf "\n"
+    printf "  # Print default proxy from config\n"
+    printf "  ${GREEN}proxydeploy run --print-default-proxy${NC}\n"
+    printf "\n"
+    printf "  # Print detailed content of current config\n"
+    printf "  ${GREEN}proxydeploy run --print-detailed-working-proxy${NC}\n"
+    printf "\n"
+    printf "  # Print detailed content of default config\n"
+    printf "  ${GREEN}proxydeploy run --print-detailed-default-proxy${NC}\n"
+    printf "\n"
+    printf "  # Print detailed content of ALL configs\n"
+    printf "  ${GREEN}proxydeploy run --print-detailed-all-proxy${NC}\n"
+    printf "\n"
+    printf "  # List all available config files\n"
+    printf "  ${GREEN}proxydeploy run --print-all-proxy${NC}\n"
+    printf "\n"
+    printf "  # Create and edit a new config\n"
+    printf "  ${GREEN}proxydeploy run --create-new-proxy @project${NC}\n"
+    printf "\n"
+    printf "  # Enforce a config for current session\n"
+    printf "  ${GREEN}proxydeploy run --enforce-proxy @work${NC}\n"
+    printf "\n"
+    printf "  # Enforce a config for the next query only\n"
+    printf "  ${GREEN}proxydeploy run --enforce-proxy @work --once${NC}\n"
+    printf "\n"
+    printf "  # Ignore a config for current session\n"
+    printf "  ${GREEN}proxydeploy run --ignore-proxy @home${NC}\n"
+    printf "\n"
+    printf "  # Ignore a config for the next query only\n"
+    printf "  ${GREEN}proxydeploy run --ignore-proxy @home --once${NC}\n"
+    printf "\n"
+    printf "  # Start provisional mode\n"
+    printf "  ${GREEN}proxydeploy run --provisional-start${NC}\n"
+    printf "\n"
+    printf "  # End provisional mode\n"
+    printf "  ${GREEN}proxydeploy run --provisional-end${NC}\n"
+    printf "\n"
+    printf "For more details, visit: https://proxy.macwave.org"
     exit 0
 fi
 
 # --- 处理 --help-all ---
 if [[ "$1" == "--help-all" ]]; then
-    echo -e "\033[35m==== proxydeploy (configuration management) ====\033[0m"
+    printf "${MAGENTA}==== proxydeploy (configuration management) ====${NC}\n"
     # 复用 -h 的打印逻辑（直接调用自身 -h）
     $0 -h
-    echo -e "\033[35m================================================\033[0m"
-    echo
-    echo -e "\033[35m==== waveproxy (proxy decision engine) ====\033[0m"
+    printf "${MAGENTA}================================================${NC}\n"
+    printf "\n"
+    printf "${MAGENTA}==== waveproxy (proxy decision engine) ====${NC}\n"
     waveproxy -h 2>/dev/null || echo "🌊 waveproxy command not found."
-    echo -e "\033[35m==========================================\033[0m"
-    echo
-    echo -e "\033[35m==== proxywrap (auto-inject wrapper) ====\033[0m"
+    printf "${MAGENTA}==========================================${NC}\n"
+    printf "\n"
+    printf "${MAGENTA}==== proxywrap (auto-inject wrapper) ====${NC}\n"
     proxywrap -h 2>/dev/null || echo "🌊 proxywrap command not found."
     exit 0
 fi
@@ -173,7 +184,7 @@ print_detailed_config() {
 
         # 如果当前配置就是 working，用绿色；否则用黑色（无颜色）
         if [ "$config_name" = "$working_name" ]; then
-            printf "\033[32m%${padding}s\033[0m\n" "$marker"
+            printf "${GREEN}%${padding}s${NC}\n" "$marker"
         else
             printf "%${padding}s\n" "$marker"
         fi
@@ -330,7 +341,7 @@ case "$CMD" in
                     fi
                     # 配置名 + 填充 + 标记（带颜色）
                     if [ "$name" = "$working_name" ]; then
-                        printf "%s%${padding}s\033[32m%s\033[0m\n" "$name" "" "$marker"
+                        printf "%s%${padding}s${GREEN}%s${NC}\n" "$name" "" "$marker"
                     else
                         printf "%s%${padding}s%s\n" "$name" "" "$marker"
                     fi
@@ -352,7 +363,7 @@ case "$CMD" in
 
             NEW_FILE="$CONFIG_DIR/proxydeploy@${NEW_NAME}.txt"
             if [ -f "$NEW_FILE" ]; then
-                echo -e "\033[31m🌊 Error: Config '${NEW_NAME}' already exists. Use 'proxydeploy edit @${NEW_NAME}' to edit it.\033[0m"
+                printf "${RED}🌊 Error: Config '${NEW_NAME}' already exists. Use 'proxydeploy edit @${NEW_NAME}' to edit it.${NC}\n"
                 exit 1
             else
                 echo "🌊 Creating new config: proxydeploy@${NEW_NAME}.txt"
@@ -443,8 +454,8 @@ case "$CMD" in
                [ -n "$WAVEPROXY_ONCE_ENFORCE_PROXY" ] || \
                [ -n "$WAVEPROXY_ONCE_IGNORE_CONFIG" ] || \
                [ -n "$WAVEPROXY_ONCE_IGNORE_PROXY" ]; then
-                echo -e "\033[31m🌊 There is already an ongoing provisional session.\033[0m"
-                echo -e "\033[31m🌊 Continuing will clear all current provisional settings.\033[0m"
+                printf "${RED}🌊 There is already an ongoing provisional session.${NC}\n"
+                printf "${RED}🌊 Continuing will clear all current provisional settings.${NC}\n"
                 echo -n "🌊 Are you sure you want to continue? [Y/n] "
                 read -n 1 -r REPLY
                 echo
