@@ -114,6 +114,7 @@ if [[ "$1" == "--help-all" ]]; then
     # 复用 -h 的打印逻辑（直接调用自身 -h）
     $0 -h
     printf "\n"
+    printf "\n"
     printf "\033[34m============waveproxy (proxy decision engine)============\033[0m\n"
     printf "\n"
     waveproxy -h 2>/dev/null || echo "🌊 waveproxy command not found."
