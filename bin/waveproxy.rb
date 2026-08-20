@@ -53,7 +53,7 @@ def print_help
   puts "  \033[32m-V, --version\033[0m       Show program's version number and exit"
   puts "  \033[32m-s, --silent\033[0m        Suppress all non-output messages (for scripting)"
   puts "  \033[32m-v, --verbose\033[0m       Enable detailed debug output (stderr)"
-  puts "  \033[32m-f, --fail\033[0m           Exit with non-zero code on error (like curl -f)"
+  puts "  \033[32m-f, --fail\033[0m          Exit with non-zero code on error (like curl -f)"
   puts
   puts "For more details, visit: https://proxy.macwave.org"
 end
