@@ -221,14 +221,21 @@ proxydeploy run --ignore-proxy "proxy_url" [--once]
       > 🌊 Proxy 'socks5://127.0.0.1:1080' ignored.
 
 
-proxydeploy run --provisional-start
+proxydeploy run --provisional-start @name
     Start provisional mode. All temporary settings (enforce/ignore) will remain
     active until you run --provisional-end or close the terminal.
 
     Example:
-      proxydeploy run --provisional-start
-      > 🌊 Provisional mode started.
+      proxydeploy run --provisional-start @work
+      > 🌊 Provisional mode started (work).
 
+proxydeploy run --provisional-start "proxy_url"
+    Start provisional mode. All temporary settings (enforce/ignore) will remain
+    active until you run --provisional-end or close the terminal.
+
+    Example:
+      proxydeploy run --provisional-start "http://127.0.0.1:1080"
+      > 🌊 Provisional mode started (http://127.0.0.1:1080).
 
 proxydeploy run --provisional-end
     End provisional mode and clear all temporary settings.
