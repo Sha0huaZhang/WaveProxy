@@ -446,8 +446,14 @@ case "$CMD" in
             exit 0
         fi
 
-        # --- 开启临时模式（带确认机制） ---
+        # --- 开启临时模式（带参数，立即生效） ---
         if [ "$1" = "--provisional-start" ]; then
+            TARGET="$2"
+            if [ -z "$TARGET" ]; then
+                echo "🌊 Usage: proxydeploy run --provisional-start @config_name | \"proxy_url\""
+                exit 1
+            fi
+
             # 检查是否存在正在进行的 provisional 环境变量
             if [ -n "$WAVEPROXY_ENFORCE_CONFIG" ] || \
                [ -n "$WAVEPROXY_ENFORCE_PROXY" ] || \
@@ -477,7 +483,18 @@ case "$CMD" in
                 unset WAVEPROXY_ONCE_IGNORE_PROXY
                 echo "🌊 Existing provisional settings cleared."
             fi
-            echo "🌊 Provisional mode started. All temporary settings will remain until --provisional-end or terminal close."
+
+            # 根据参数类型设置强制/忽略
+            if [[ "$TARGET" == @* ]]; then
+                CONFIG_NAME="${TARGET#@}"
+                export WAVEPROXY_ENFORCE_CONFIG="$CONFIG_NAME"
+                echo "🌊 Provisional mode started with enforced config: $CONFIG_NAME"
+            else
+                export WAVEPROXY_ENFORCE_PROXY="$TARGET"
+                echo "🌊 Provisional mode started with enforced proxy: $TARGET"
+            fi
+
+            echo "🌊 Settings will remain until --provisional-end or terminal close."
             exit 0
         fi
 
@@ -495,7 +512,7 @@ case "$CMD" in
             exit 0
         fi
 
-        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy | --print-detailed-working-proxy | --print-detailed-default-proxy | --print-detailed-all-proxy | --print-all-proxy | --create-new-proxy @name | --enforce-proxy @name/url [--once] | --ignore-proxy @name/url [--once] | --provisional-start | --provisional-end"
+        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy | --print-detailed-working-proxy | --print-detailed-default-proxy | --print-detailed-all-proxy | --print-all-proxy | --create-new-proxy @name | --enforce-proxy @name/url [--once] | --ignore-proxy @name/url [--once] | --provisional-start @name/url | --provisional-end"
         exit 1
         ;;
 
