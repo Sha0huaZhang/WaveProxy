@@ -527,7 +527,7 @@ case "$CMD" in
             exit 0
         fi
 
-        echo -e "\033[32m🌊 Usage: proxydeploy run\033[0m"
+        echo -e "\033[34m🌊 Usage: proxydeploy run\033[0m"
         echo -e "\033[32m  --change-to-default @new @old\033[0m"
         echo -e "\033[32m  --print-working-proxy\033[0m"
         echo -e "\033[32m  --print-default-proxy\033[0m"
