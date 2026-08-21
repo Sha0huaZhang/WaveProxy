@@ -55,7 +55,7 @@ def print_help
   puts "  \033[32m-v, --verbose\033[0m       Enable detailed debug output (stderr)"
   puts "  \033[32m-f, --fail\033[0m          Exit with non-zero code on error (like curl -f)"
   puts
-  puts "For more details, visit: https://proxy.macwave.org"
+  puts "For more details, visit: \033[34mhttps://proxy.macwave.org\033[0m"
 end
 
 def print_help_all
