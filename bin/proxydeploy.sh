@@ -527,19 +527,19 @@ case "$CMD" in
             exit 0
         fi
 
-        echo "🌊 Usage: proxydeploy run"
-        echo "  --change-to-default @new @old"
-        echo "  --print-working-proxy"
-        echo "  --print-default-proxy"
-        echo "  --print-detailed-working-proxy"
-        echo "  --print-detailed-default-proxy"
-        echo "  --print-detailed-all-proxy"
-        echo "  --print-all-proxy"
-        echo "  --create-new-proxy @name"
-        echo "  --enforce-proxy @name/url [--once]"
-        echo "  --ignore-proxy @name/url [--once]"
-        echo "  --provisional-start @name/url"
-        echo "  --provisional-end"
+        echo -e "\033[32m🌊 Usage: proxydeploy run\033[0m"
+        echo -e "\033[32m  --change-to-default @new @old\033[0m"
+        echo -e "\033[32m  --print-working-proxy\033[0m"
+        echo -e "\033[32m  --print-default-proxy\033[0m"
+        echo -e "\033[32m  --print-detailed-working-proxy\033[0m"
+        echo -e "\033[32m  --print-detailed-default-proxy\033[0m"
+        echo -e "\033[32m  --print-detailed-all-proxy\033[0m"
+        echo -e "\033[32m  --print-all-proxy\033[0m"
+        echo -e "\033[32m  --create-new-proxy @name\033[0m"
+        echo -e "\033[32m  --enforce-proxy @name/url [--once]\033[0m"
+        echo -e "\033[32m  --ignore-proxy @name/url [--once]\033[0m"
+        echo -e "\033[32m  --provisional-start @name/url\033[0m"
+        echo -e "\033[32m  --provisional-end\033[0m"
         exit 1
         ;;
 
