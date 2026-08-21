@@ -36,11 +36,11 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "\n"
     printf "  ${GREEN}run --create-new-proxy ${BOLD}${YELLOW}@name${NC}                Create and edit a new config file\n"
     printf "  ${GREEN}run --enforce-proxy ${BOLD}${YELLOW}@name${NC} ${YELLOW}[--once]${NC}         Enforce a config (session or once)\n"
-    printf "  ${GREEN}run --enforce-proxy ${BOLD}${YELLOW}\"url\"${NC} ${YELLOW}[--once]${NC}Enforce a proxy address (session or once)\n"
+    printf "  ${GREEN}run --enforce-proxy ${BOLD}${YELLOW}\"url\"${NC} ${YELLOW}[--once]${NC}  Enforce a proxy address (session or once)\n"
     printf "  ${GREEN}run --ignore-proxy ${BOLD}${YELLOW}@name${NC} ${YELLOW}[--once]${NC}           Ignore a config (session or once)\n"
-    printf "  ${GREEN}run --ignore-proxy ${BOLD}${YELLOW}\"url\"${NC} ${YELLOW}[--once]${NC}  Ignore a proxy address (session or once)\n"
+    printf "  ${GREEN}run --ignore-proxy ${BOLD}${YELLOW}\"url\"${NC} ${YELLOW}[--once]${NC}    Ignore a proxy address (session or once)\n"
     printf "  ${GREEN}run --provisional-start ${BOLD}${YELLOW}@name${NC}                          Start provisional mode\n"
-    printf "  ${GREEN}run --provisional-start ${BOLD}${YELLOW}\"url\"${NC}                        Start provisional mode\n"
+    printf "  ${GREEN}run --provisional-start ${BOLD}${YELLOW}\"url\"${NC}                          Start provisional mode\n"
     printf "  ${GREEN}run --provisional-end${NC}                                    End provisional mode\n"
     printf "\n"
     printf "${LIGHTBLUE}Flags:${NC}\n"
@@ -107,7 +107,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "  # End provisional mode\n"
     printf "  ${GREEN}proxydeploy run --provisional-end${NC}\n"
     printf "\n"
-    printf "For more details, visit: https://proxy.macwave.org"
+    printf "For more details, visit: ${BODL}${BLUE}https://proxy.macwave.org${NC}"
     exit 0
 fi
 
