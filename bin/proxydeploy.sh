@@ -87,7 +87,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "  ${GREEN}proxydeploy run --create-new-proxy ${YELLOW}@project${NC}\n"
     printf "\n"
     printf "  # Enforce a config for current session\n"
-    printf "  ${GREEN}proxydeploy run --enforce-proxy ${BOLD}${YWLLOW}@work${NC}\n"
+    printf "  ${GREEN}proxydeploy run --enforce-proxy ${BOLD}${YELLOW}@work${NC}\n"
     printf "\n"
     printf "  # Enforce a config for the next query only\n"
     printf "  ${GREEN}proxydeploy run --enforce-proxy ${BOLD}${YELLOW}@work --once${NC}\n"
