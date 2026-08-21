@@ -241,22 +241,33 @@ case "$CMD" in
 
             NEW_FILE="$CONFIG_DIR/proxydeploy@${NEW_NAME}.txt"
             if [ ! -f "$NEW_FILE" ]; then
-                echo "🌊 Error: Config not found: proxydeploy@${NEW_NAME}.txt"
+                echo -e "\033[31mError: Config not found: proxydeploy@${NEW_NAME}.txt\033[0m"
                 exit 1
             fi
 
             OLD_FILE="$CONFIG_DIR/proxydeploy@${OLD_NAME}.txt"
             if [ ! -f "$OLD_FILE" ]; then
-                echo "🌊 Warning: Old config not found: proxydeploy@${OLD_NAME}.txt"
+                echo -e "\033[33mWarning: Old config not found: proxydeploy@${OLD_NAME}.txt\033[0m"
             fi
 
-            echo "🌊 Switching default config from $OLD_NAME to $NEW_NAME"
+            echo -e "\033[33mDefault config will be changed:\033[0m"
+            echo -e "  \033[31mOld: $OLD_NAME\033[0m"
+            echo -e "  \033[32mNew: $NEW_NAME\033[0m"
+            echo -n "Are you sure? [Y/n] "
+            read -n 1 -r REPLY
+            echo
+            if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+                echo -e "\033[31mOperation cancelled.\033[0m"
+                exit 0
+            fi
+
+            echo -e "\033[32mSwitching default config from $OLD_NAME to $NEW_NAME\033[0m"
             cp "$NEW_FILE" "$CONFIG_DIR/proxydeploy@default.txt"
 
             echo "🌊 export WAVEPROXY_CONFIG=$NEW_NAME" > "$CONFIG_DIR/.default_config"
 
-            echo "🌊 Default config updated to: $NEW_NAME"
-            echo "🌊 WaveProxy will use $NEW_NAME on next query."
+            echo -e "\033[32mDefault config updated to: $NEW_NAME\033[0m"
+            echo -e "\033[32mWaveProxy will use $NEW_NAME on next query.\033[0m"
             exit 0
         fi
 
@@ -516,7 +527,19 @@ case "$CMD" in
             exit 0
         fi
 
-        echo "🌊 Usage: proxydeploy run --change-to-default @new @old | --print-working-proxy | --print-default-proxy | --print-detailed-working-proxy | --print-detailed-default-proxy | --print-detailed-all-proxy | --print-all-proxy | --create-new-proxy @name | --enforce-proxy @name/url [--once] | --ignore-proxy @name/url [--once] | --provisional-start @name/url | --provisional-end"
+        echo "🌊 Usage: proxydeploy run"
+        echo "  --change-to-default @new @old"
+        echo "  --print-working-proxy"
+        echo "  --print-default-proxy"
+        echo "  --print-detailed-working-proxy"
+        echo "  --print-detailed-default-proxy"
+        echo "  --print-detailed-all-proxy"
+        echo "  --print-all-proxy"
+        echo "  --create-new-proxy @name"
+        echo "  --enforce-proxy @name/url [--once]"
+        echo "  --ignore-proxy @name/url [--once]"
+        echo "  --provisional-start @name/url"
+        echo "  --provisional-end"
         exit 1
         ;;
 
