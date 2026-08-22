@@ -1,5 +1,5 @@
 #!/bin/bash
-# WaveProxy v1.0.0-beta.1 官方安装脚本
+# WaveProxy v1.0.0 官方安装脚本
 # 安装路径：~/.local/waveproxy/
 
 set -e
