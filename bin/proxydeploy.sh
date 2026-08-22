@@ -26,6 +26,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "  ${GREEN}list${NC} ${BOLD}${YELLOW}[@name]${NC}                          View config content (default: default)\n"
     printf "  ${GREEN}edit${NC} ${BOLD}${YELLOW}[@name]${NC}                        Edit config with nano (default: default)\n"
     printf "  ${GREEN}run --change-to-default ${BOLD}${YELLOW}@new${NC} ${YELLOW}@old${NC}                      Switch default config\n"
+    printf "  ${GREEN}run --change-to-default ${BOLD}${YELLOW}None${NC}                             Restore default config\n"
     printf "  ${GREEN}run --print-working-proxy${NC}          Print the currently active proxy variable\n"
     printf "  ${GREEN}run --print-default-proxy${NC}   Print the default proxy variable from the config\n"
     printf "\n"
@@ -67,6 +68,9 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "\n"
     printf "  # Switch default config to 'work'\n"
     printf "  ${GREEN}proxydeploy run --change-to-default ${BOLD}${YELLOW}@work${NC} ${YELLOW}@default${NC}\n"
+    printf "\n"
+    printf "  # Restore default config to 'default'\n"
+    printf "  ${GREEN}proxydeploy run --change-to-default None${NC}\n"
     printf "\n"
     printf "  # Print current working proxy\n"
     printf "  ${GREEN}proxydeploy run --print-working-proxy${NC}\n"
@@ -242,6 +246,16 @@ case "$CMD" in
         if [ "$1" = "--change-to-default" ]; then
             NEW_NAME="${2#@}"
             OLD_NAME="${3#@}"
+
+            # 大小写不敏感判断 None（恢复默认配置）
+            TARGET_LOWER=$(echo "$NEW_NAME" | tr '[:upper:]' '[:lower:]')
+            if [[ "$TARGET_LOWER" == "none" ]]; then
+                echo "🌊 Restoring default config to default."
+                cp "$CONFIG_DIR/proxydeploy@default.txt" "$CONFIG_DIR/proxydeploy@default.txt.tmp"
+                mv "$CONFIG_DIR/proxydeploy@default.txt.tmp" "$CONFIG_DIR/proxydeploy@default.txt"
+                echo "🌊 Default config restored to default."
+                exit 0
+            fi
 
             NEW_FILE="$CONFIG_DIR/proxydeploy@${NEW_NAME}.txt"
             if [ ! -f "$NEW_FILE" ]; then
@@ -557,6 +571,7 @@ case "$CMD" in
 
         echo -e "${BLUE}🌊 Usage: proxydeploy run${NC}"
         echo -e "${GREEN}  --change-to-default ${BOLD}${YELLOW}@new @old${NC}"
+        echo -e "${GREEN}  --change-to-default ${BOLD}${YELLOW}None${NC}"
         echo -e "${GREEN}  --print-working-proxy${NC}"
         echo -e "${GREEN}  --print-default-proxy${NC}"
         echo -e "${GREEN}  --print-detailed-working-proxy${NC}"
