@@ -26,7 +26,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "  ${GREEN}list${NC} ${BOLD}${YELLOW}[@name]${NC}                          View config content (default: default)\n"
     printf "  ${GREEN}edit${NC} ${BOLD}${YELLOW}[@name]${NC}                        Edit config with nano (default: default)\n"
     printf "  ${GREEN}run --change-to-default ${BOLD}${YELLOW}@new${NC} ${YELLOW}@old${NC}                      Switch default config\n"
-    printf "  ${GREEN}run --change-to-default ${BOLD}${YELLOW}None${NC}                             Restore default config\n"
+    printf "  ${GREEN}run --change-to-default ${BOLD}${YELLOW}None${NC}                           Restore default config\n"
     printf "  ${GREEN}run --print-working-proxy${NC}          Print the currently active proxy variable\n"
     printf "  ${GREEN}run --print-default-proxy${NC}   Print the default proxy variable from the config\n"
     printf "\n"
