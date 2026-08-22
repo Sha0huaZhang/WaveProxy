@@ -1,5 +1,5 @@
 #!/bin/bash
-# WaveProxy 1.1.0 Beta3(233F1003) 官方安装脚本
+# WaveProxy v1.0.0 官方安装脚本
 # 安装路径：~/.local/waveproxy/
 
 set -e
@@ -84,7 +84,7 @@ fi
 # =========================
 
 echo ""
-echo -e "${GREEN}🌊 WaveProxy 1.1.0 Beta3(233F1003) installation complete!${NC}"
+echo -e "${GREEN}🌊 WaveProxy v1.0.0 installation complete!${NC}"
 echo ""
 echo -e "${GREEN}🌊 Quick start:${NC}"
 echo "  waveproxy query github.com          # Query proxy for a URL"
