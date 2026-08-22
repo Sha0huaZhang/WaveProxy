@@ -37,10 +37,13 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "  ${GREEN}run --create-new-proxy ${BOLD}${YELLOW}@name${NC}                Create and edit a new config file\n"
     printf "  ${GREEN}run --enforce-proxy ${BOLD}${YELLOW}@name${NC} ${YELLOW}[--once]${NC}         Enforce a config (session or once)\n"
     printf "  ${GREEN}run --enforce-proxy ${BOLD}${YELLOW}\"url\"${NC} ${YELLOW}[--once]${NC}  Enforce a proxy address (session or once)\n"
+    printf "  ${GREEN}run --enforce-proxy ${BOLD}${YELLOW}None${NC} ${YELLOW}[--once]${NC}  Force direct connection\n"
     printf "  ${GREEN}run --ignore-proxy ${BOLD}${YELLOW}@name${NC} ${YELLOW}[--once]${NC}           Ignore a config (session or once)\n"
     printf "  ${GREEN}run --ignore-proxy ${BOLD}${YELLOW}\"url\"${NC} ${YELLOW}[--once]${NC}    Ignore a proxy address (session or once)\n"
+    printf "  ${GREEN}run --ignore-proxy ${BOLD}${YELLOW}None${NC} ${YELLOW}[--once]${NC}   Ignore direct connection\n"
     printf "  ${GREEN}run --provisional-start ${BOLD}${YELLOW}@name${NC}                          Start provisional mode\n"
     printf "  ${GREEN}run --provisional-start ${BOLD}${YELLOW}\"url\"${NC}                          Start provisional mode\n"
+    printf "  ${GREEN}run --provisional-start ${BOLD}${YELLOW}None${NC}                          Start provisional mode with direct connection\n"
     printf "  ${GREEN}run --provisional-end${NC}                                    End provisional mode\n"
     printf "\n"
     printf "${LIGHTBLUE}Flags:${NC}\n"
@@ -54,16 +57,16 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "  ${GREEN}proxydeploy list${NC}\n"
     printf "\n"
     printf "  # View a specific config\n"
-    printf "  ${GREEN}proxydeploy list ${BOLE}${YELLOW}@work${NC}\n"
+    printf "  ${GREEN}proxydeploy list @work${NC}\n"
     printf "\n"
     printf "  # Edit default config with nano\n"
     printf "  ${GREEN}proxydeploy edit${NC}\n"
     printf "\n"
     printf "  # Edit a specific config\n"
-    printf "  ${GREEN}proxydeploy edit ${BOLD}${YELLOW}@work${NC}\n"
+    printf "  ${GREEN}proxydeploy edit @work${NC}\n"
     printf "\n"
     printf "  # Switch default config to 'work'\n"
-    printf "  ${GREEN}proxydeploy run --change-to-default ${BOLD}${YELLOW}@work${NC} ${YELLOW}@default${NC}\n"
+    printf "  ${GREEN}proxydeploy run --change-to-default @work @default${NC}\n"
     printf "\n"
     printf "  # Print current working proxy\n"
     printf "  ${GREEN}proxydeploy run --print-working-proxy${NC}\n"
@@ -84,30 +87,30 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     printf "  ${GREEN}proxydeploy run --print-all-proxy${NC}\n"
     printf "\n"
     printf "  # Create and edit a new config\n"
-    printf "  ${GREEN}proxydeploy run --create-new-proxy ${YELLOW}@project${NC}\n"
+    printf "  ${GREEN}proxydeploy run --create-new-proxy @project${NC}\n"
     printf "\n"
     printf "  # Enforce a config for current session\n"
-    printf "  ${GREEN}proxydeploy run --enforce-proxy ${BOLD}${YELLOW}@work${NC}\n"
+    printf "  ${GREEN}proxydeploy run --enforce-proxy @work${NC}\n"
     printf "\n"
     printf "  # Enforce a config for the next query only\n"
-    printf "  ${GREEN}proxydeploy run --enforce-proxy ${BOLD}${YELLOW}@work --once${NC}\n"
+    printf "  ${GREEN}proxydeploy run --enforce-proxy @work --once${NC}\n"
     printf "\n"
     printf "  # Ignore a config for current session\n"
-    printf "  ${GREEN}proxydeploy run --ignore-proxy ${BOLD}${YELLOW}@home${NC}\n"
+    printf "  ${GREEN}proxydeploy run --ignore-proxy @home${NC}\n"
     printf "\n"
     printf "  # Ignore a config for the next query only\n"
-    printf "  ${GREEN}proxydeploy run --ignore-proxy ${BOLD}${YELLOW}@home --once${NC}\n"
+    printf "  ${GREEN}proxydeploy run --ignore-proxy @home --once${NC}\n"
     printf "\n"
     printf "  # Start provisional mode\n"
-    printf "  ${GREEN}proxydeploy run --provisional-start ${BOLD}${YELLOW}@name${NC}\n"
+    printf "  ${GREEN}proxydeploy run --provisional-start @name${NC}\n"
     printf "\n"
     printf "  # Start provisional mode\n"
-    printf "  ${GREEN}proxydeploy run --provisional-start ${BOLD}${YELLOW}\"url\"${NC}\n"
+    printf "  ${GREEN}proxydeploy run --provisional-start \"url\"${NC}\n"
     printf "\n"
     printf "  # End provisional mode\n"
     printf "  ${GREEN}proxydeploy run --provisional-end${NC}\n"
     printf "\n"
-    printf "For more details, visit: ${BODL}${BLUE}https://proxy.macwave.org${NC}"
+    printf "For more details, visit: ${BOLD}${BLUE}https://proxy.macwave.org${NC}"
     exit 0
 fi
 
@@ -396,8 +399,16 @@ case "$CMD" in
         if [ "$1" = "--enforce-proxy" ]; then
             TARGET="$2"
             if [ -z "$TARGET" ]; then
-                echo "🌊 Usage: proxydeploy run --enforce-proxy @config_name | \"proxy_url\" [--once]"
+                echo "🌊 Usage: proxydeploy run --enforce-proxy @config_name | \"proxy_url\" | None"
                 exit 1
+            fi
+
+            # 大小写不敏感判断 None
+            TARGET_LOWER=$(echo "$TARGET" | tr '[:upper:]' '[:lower:]')
+            if [[ "$TARGET_LOWER" == "none" ]]; then
+                export WAVEPROXY_ENFORCE_PROXY="None"
+                echo "🌊 Enforced direct connection (None)."
+                exit 0
             fi
 
             # 检查是否带了 --once
@@ -431,8 +442,16 @@ case "$CMD" in
         if [ "$1" = "--ignore-proxy" ]; then
             TARGET="$2"
             if [ -z "$TARGET" ]; then
-                echo "🌊 Usage: proxydeploy run --ignore-proxy @config_name | \"proxy_url\" [--once]"
+                echo "🌊 Usage: proxydeploy run --ignore-proxy @config_name | \"proxy_url\" | None"
                 exit 1
+            fi
+
+            # 大小写不敏感判断 None
+            TARGET_LOWER=$(echo "$TARGET" | tr '[:upper:]' '[:lower:]')
+            if [[ "$TARGET_LOWER" == "none" ]]; then
+                export WAVEPROXY_IGNORE_PROXY="None"
+                echo "🌊 Ignored direct connection (None)."
+                exit 0
             fi
 
             # 检查是否带了 --once
@@ -466,8 +485,16 @@ case "$CMD" in
         if [ "$1" = "--provisional-start" ]; then
             TARGET="$2"
             if [ -z "$TARGET" ]; then
-                echo "🌊 Usage: proxydeploy run --provisional-start @config_name | \"proxy_url\""
+                echo "🌊 Usage: proxydeploy run --provisional-start @config_name | \"proxy_url\" | None"
                 exit 1
+            fi
+
+            # 大小写不敏感判断 None
+            TARGET_LOWER=$(echo "$TARGET" | tr '[:upper:]' '[:lower:]')
+            if [[ "$TARGET_LOWER" == "none" ]]; then
+                export WAVEPROXY_ENFORCE_PROXY="None"
+                echo "🌊 Provisional mode started with direct connection (None)."
+                exit 0
             fi
 
             # 检查是否存在正在进行的 provisional 环境变量
@@ -536,10 +563,13 @@ case "$CMD" in
         echo -e "${GREEN}  --print-detailed-default-proxy${NC}"
         echo -e "${GREEN}  --print-detailed-all-proxy${NC}"
         echo -e "${GREEN}  --print-all-proxy${NC}"
-        echo -e "${GREEN}  --create-new-proxy ${BLOD}${YELLOW}@name${NC}"
-        echo -e "${GREEN}  --enforce-proxy ${BOLD}${YELLOW}@name/url${NC} ${YWLLOW}[--once]${NC}"
-        echo -e "${GREEN}  --ignore-proxy ${YELLOW}@name/url${NC} ${YWLLOW}[--once]${NC}"
-        echo -e "${GREEN}  --provisional-start ${YELLOW}@name/url${NC}"
+        echo -e "${GREEN}  --create-new-proxy ${BOLD}${YELLOW}@name${NC}"
+        echo -e "${GREEN}  --enforce-proxy ${BOLD}${YELLOW}@name/url${NC} ${YELLOW}[--once]${NC}"
+        echo -e "${GREEN}  --enforce-proxy ${BOLD}${YELLOW}None${NC} ${YELLOW}[--once]${NC}"
+        echo -e "${GREEN}  --ignore-proxy ${BOLD}${YELLOW}@name/url${NC} ${YELLOW}[--once]${NC}"
+        echo -e "${GREEN}  --ignore-proxy ${BOLD}${YELLOW}None${NC} ${YELLOW}[--once]${NC}"
+        echo -e "${GREEN}  --provisional-start ${BOLD}${YELLOW}@name/url${NC}"
+        echo -e "${GREEN}  --provisional-start ${BOLD}${YELLOW}None${NC}"
         echo -e "${GREEN}  --provisional-end${NC}"
         exit 1
         ;;
