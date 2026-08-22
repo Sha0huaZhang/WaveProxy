@@ -73,9 +73,13 @@ proxydeploy run --print-all-proxy               # List all configs with markers
 proxydeploy run --create-new-proxy @name        # Create and edit a new config
 proxydeploy run --enforce-proxy @name [--once]  # Enforce config (session or once)
 proxydeploy run --enforce-proxy "url" [--once]  # Enforce proxy address (session or once)
+proxydeploy run --enforce-proxy None [--once]   # Force direct connection
 proxydeploy run --ignore-proxy @name [--once]   # Ignore config (session or once)
 proxydeploy run --ignore-proxy "url" [--once]   # Ignore proxy address (session or once)
-proxydeploy run --provisional-start             # Start provisional mode
+proxydeploy run --ignore-proxy None [--once]    # Ignore direct connection
+proxydeploy run --provisional-start @name       # Start provisional mode
+proxydeploy run --provisional-start "url"       # Start provisional mode
+proxydeploy run --provisional-start None        # Start provisional mode with direct connection
 proxydeploy run --provisional-end               # End provisional mode
 
 proxydeploy -h, --help                          # Show help information
