@@ -84,7 +84,7 @@ fi
 # =========================
 
 echo ""
-echo -e "${GREEN}🌊 WaveProxy v1.0.0-beta.1 installation complete!${NC}"
+echo -e "${GREEN}🌊 WaveProxy v1.0.0 installation complete!${NC}"
 echo ""
 echo -e "${GREEN}🌊 Quick start:${NC}"
 echo "  waveproxy query github.com          # Query proxy for a URL"
